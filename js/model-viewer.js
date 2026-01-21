@@ -665,12 +665,14 @@ function loadOBJ(index) {
     gridHelper.position.y = -39.9;
     scene.add(gridHelper);
     
-    // Buscar archivo MTL
+    // Buscar archivo MTL y configurar ruta de texturas
     const mtlPath = objPath.replace('.obj', '.mtl');
+    const texturePath = objPath.substring(0, objPath.lastIndexOf('/') + 1); // Carpeta del modelo
     const objLoader = new THREE.OBJLoader();
     
     // Intentar cargar MTL primero
     const mtlLoader = new THREE.MTLLoader();
+    mtlLoader.setPath(texturePath); // Configurar ruta de texturas
     mtlLoader.load(
         mtlPath,
         function(materials) {
