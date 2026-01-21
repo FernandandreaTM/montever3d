@@ -353,7 +353,7 @@ function toggleModifications() {
 }
 
 
-// ===== PREVIEW MULTIPLE STL FILES =====
+// ===== PREVIEW MULTIPLE 3D FILES (STL/OBJ/MTL) =====
 function previewMultipleSTL(input) {
     if (!input.files || input.files.length === 0) {
         document.getElementById('stlFilesPreview').innerHTML = '';
@@ -368,15 +368,25 @@ function previewMultipleSTL(input) {
     
     selectedSTLFiles.forEach((file, index) => {
         const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const ext = file.name.split('.').pop().toLowerCase();
+        
+        // Icono según tipo de archivo
+        let icon = '📦';
+        if (ext === 'obj') icon = '🎨';
+        if (ext === 'mtl') icon = '🖌️';
+        
+        // Nombre sin extensión
+        const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.'));
+        
         const fileItem = document.createElement('div');
         fileItem.className = 'stl-preview-item';
         fileItem.innerHTML = `
             <div class="stl-preview-info">
-                <span class="stl-icon">📦</span>
+                <span class="stl-icon">${icon}</span>
                 <div>
                     <input type="text" class="stl-name-input" 
                         placeholder="Nombre del modelo" 
-                        value="${file.name.replace('.stl', '')}"
+                        value="${nameWithoutExt}"
                         data-index="${index}"
                         oninput="updatePreview()">
                     <small>${file.name} (${sizeMB} MB)</small>
