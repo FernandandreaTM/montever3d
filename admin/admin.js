@@ -371,6 +371,7 @@ function previewMultipleSTL(input) {
         let icon = '📦';
         if (ext === 'obj') icon = '🎨';
         if (ext === 'mtl') icon = '🖌️';
+        if (ext === 'jpg' || ext === 'jpeg' || ext === 'png') icon = '🖼️';
         
         // Nombre sin extensión
         const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.'));
@@ -719,10 +720,19 @@ function collectFormData() {
         
         const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
         
+        // Para texturas (jpg/png), usar nombre original sin customName
+        let finalName = customName;
+        let finalPath = `models/${id}/${customName}.${fileExt}`;
+
+        if (fileExt === 'jpg' || fileExt === 'jpeg' || fileExt === 'png') {
+            finalName = file.name; // Mantener nombre original para texturas
+            finalPath = `models/${id}/${file.name}`; // Path con nombre original
+        }
+
         stlFiles.push({
             id: customName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-            name: customName,
-            path: `models/${id}/${customName}.${fileExt}`,  // ✅ Usa extensión real
+            name: finalName,
+            path: finalPath,
             fileSize: `${sizeMB} MB`
         });
     });
