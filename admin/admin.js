@@ -114,7 +114,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-
 // ===== MODE SWITCHING =====
 function switchMode(mode) {
     currentMode = mode;
@@ -174,7 +173,6 @@ async function loadExistingModels() {
         alert('⚠️ Error al cargar modelos existentes');
     }
 }
-
 // ===== LOAD MODEL FOR EDITING =====
 function loadModelForEdit() {
     const modelId = document.getElementById('selectModel').value;
@@ -351,7 +349,6 @@ function toggleModifications() {
     updatePreview();
     autoSave();
 }
-
 
 // ===== PREVIEW MULTIPLE 3D FILES (STL/OBJ/MTL) =====
 function previewMultipleSTL(input) {
@@ -712,13 +709,20 @@ function collectFormData() {
     // Luego agregar nuevos
     selectedSTLFiles.forEach((file, index) => {
         const nameInput = document.querySelector(`.stl-name-input[data-index="${index}"]`);
-        const customName = nameInput ? nameInput.value : file.name.replace('.stl', '');
+        
+        // Obtener extensión del archivo
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        
+        // Nombre sin extensión
+        const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.'));
+        const customName = nameInput ? nameInput.value : nameWithoutExt;
+        
         const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
         
         stlFiles.push({
             id: customName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
             name: customName,
-            path: `models/${id}/${customName}.stl`,
+            path: `models/${id}/${customName}.${fileExt}`,  // ✅ Usa extensión real
             fileSize: `${sizeMB} MB`
         });
     });
