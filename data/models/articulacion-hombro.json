@@ -1,0 +1,54 @@
+{
+  "id": "articulacion-hombro",
+  "title": "Articulación de Hombro",
+  "category": "Sistema Articular",
+  "type": "Funcional",
+  "description": "Modelo interactivo de manguito rotador con agujeros para elásticos que permite simular movimientos articulares reales. ",
+  "source": "Externo",
+  "sourceStatus": "Original",
+  "sourceName": "Thingiverse",
+  "origin": "Modelado",
+  "creator": "DaveMakesStuff",
+  "creatorUrl": "https://www.thingiverse.com/DaveMakesStuff",
+  "license": "CC BY-NC-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "modifications": null,
+  "externalSourceUrl": "https://www.thingiverse.com/thing:5373760",
+  "images": {
+    "thumbnail": "images/models/articulacion-hombro/thumb.jpg",
+    "gallery": [
+      "images/models/articulacion-hombro/gallery-1.jpg",
+      "images/models/articulacion-hombro/gallery-2.jpg",
+      "images/models/articulacion-hombro/gallery-3.jpg"
+    ]
+  },
+  "3dFiles": [
+    {
+      "id": "articulacion-hombro",
+      "name": "Articulación de Hombro",
+      "path": "models/articulacion-hombro/articulacion-hombro.stl",
+      "fileSize": "60,7 MB"
+    },
+    {
+      "id": "hmero",
+      "name": "Húmero",
+      "path": "models/articulacion-hombro/articulacion-hombro2.stl",
+      "fileSize": "2,77 MB"
+    },
+    {
+      "id": "cabeza-del-hmero",
+      "name": "Cabeza del Húmero",
+      "path": "models/articulacion-hombro/articulacion-hombro3.stl",
+      "fileSize": "5,02 MB"
+    }
+  ],
+
+  "datasheetUrl": null,
+  "tags": [
+    "hombro",
+    "articulacion",
+    "funcional",
+    "ligamentos"
+  ],
+  "dateAdded": "2026-01-05"
+}

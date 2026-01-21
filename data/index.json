@@ -1,0 +1,13 @@
+{
+    "models": [
+        "aparato-vestibular",
+        "articulacion-de-hombro-funcional",
+        "articulacion-hombro",
+        "articulacion-rodilla",
+        "oido-interno",
+        "oido-interno-nervios",
+        "pelvis-completa",
+        "vertebra-lumbar",
+        "vertebra-toracica"
+    ]
+}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Impresión 3D - MonteVer3D</title>
+    <meta name="description" content="Solicita la impresión 3D de modelos arqueológicos del catálogo MonteVer3D">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/catalog.css">
+    <link rel="stylesheet" href="css/solicitar-impresion.css">
+    
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <!-- HEADER & NAVIGATION -->
+    <header>
+        <nav>
+            <div class="logo-container">
+                <img src="images/logo/logo-monteverde.png" alt="MonteVer3D Logo" class="logo-monteverde">
+                <img src="images/logo/logo-uach.png" alt="Universidad Austral de Chile" class="logo-uach">
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">INICIO</a></li>
+                <li><a href="catalog.html">CATÁLOGO</a></li>
+                <li><a href="casos.html">CASOS DE USO</a></li>
+                <li><a href="index.html#como-funciona">CÓMO FUNCIONA</a></li>
+                <li><a href="about.html">ACERCA DE</a></li>
+                <li><a href="index.html#cta-section">CONTRIBUIR</a></li>
+                <li><a href="index.html#cta-section">CONTACTO</a></li>
+            </ul>
+            
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <section class="catalog-header">
+        <div class="container">
+            <h1>Solicitar Impresión 3D</h1>
+            <p>Completa el formulario para generar tu Orden de Trabajo</p>
+        </div>
+    </section>
+
+    <!-- FORM CONTAINER -->
+    <div class="form-container">
+        <!-- HINT -->
+        <div class="hint">
+            <span class="hint-icon">💡</span>
+            <strong>Campos mínimos:</strong> Solo necesitas llenar los campos marcados con (*). 
+            Si no conoces detalles técnicos como material o dimensiones, déjalos vacíos.
+        </div>
+
+        <form id="printRequestForm">
+            <!-- SECTION 1: Datos del Solicitante -->
+            <div class="form-section">
+                <h2>1. Datos del Solicitante</h2>
+                
+                <div class="form-group">
+                    <label for="nombre">Nombre completo *</label>
+                    <input type="text" id="nombre" required placeholder="Ej: María González Pérez">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Correo electrónico *</label>
+                        <input type="email" id="email" required placeholder="tu.email@uach.cl">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel" id="telefono" placeholder="+56 9 1234 5678">
+                        <small>Opcional - útil para coordinar entrega</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="instituto">Instituto/Escuela</label>
+                    <input type="text" id="instituto" value="Universidad Austral de Chile - Sede Puerto Montt" readonly class="readonly-input">
+                </div>
+            </div>
+
+            <!-- SECTION 2: Especificaciones del Proyecto -->
+            <div class="form-section">
+                <h2>2. Especificaciones del Proyecto</h2>
+                
+                <div class="form-group">
+                    <label for="modelo">Modelo a imprimir *</label>
+                    <select id="modelo" required>
+                        <option value="">-- Seleccionar modelo --</option>
+                    </select>
+                    <small>Selecciona del catálogo MonteVer3D</small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cantidad">Cantidad de piezas *</label>
+                        <input type="number" id="cantidad" min="1" value="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="archivoSTL">Archivo STL (si es diferente)</label>
+                        <input type="text" id="archivoSTL" placeholder="Ej: modelo-modificado.stl">
+                        <small>Solo si usas una versión modificada</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: Características de Impresión -->
+            <div class="form-section">
+                <h2>3. Características de Impresión</h2>
+                
+                <div class="form-group">
+                    <label>Material requerido</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="material" value="PLA"> PLA</label>
+                        <label><input type="radio" name="material" value="ABS"> ABS</label>
+                        <label><input type="radio" name="material" value="PETG"> PETG</label>
+                        <label><input type="radio" name="material" value="TPU"> TPU</label>
+                        <label><input type="radio" name="material" value="Resina"> Resina</label>
+                        <label><input type="radio" name="material" value="Otro"> Otro</label>
+                    </div>
+                    <small>Si no especificas, usaremos PLA o PETG según disponibilidad</small>
+                </div>
+
+                <div class="form-group" id="otroMaterialGroup" style="display: none;">
+                    <label for="otroMaterial">Especificar otro material</label>
+                    <input type="text" id="otroMaterial" placeholder="Ej: Nylon, PC, etc.">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="color">Color</label>
+                        <input type="text" id="color" placeholder="Ej: Blanco, amarillo, etc.">
+                        <small>Si no especificas, usaremos color disponible</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Prioridad</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="prioridad" value="Normal" checked> Normal (5-7 días)</label>
+                            <label><input type="radio" name="prioridad" value="Urgente"> Urgente (2-3 días)</label>
+                            <label><input type="radio" name="prioridad" value="Emergencia"> Emergencia (24h)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Details (Collapsible) -->
+                <div class="advanced-toggle" onclick="toggleAdvanced()">
+                    <span>⚙️ Detalles Avanzados (Opcional)</span>
+                    <span id="advancedIcon">▼</span>
+                </div>
+                
+                <div id="advancedContent" class="advanced-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="relleno">Relleno (%)</label>
+                            <input type="number" id="relleno" min="0" max="100" placeholder="Ej: 20">
+                            <small>% de relleno interno (10-30% típico)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="alturaCapa">Altura de capa (mm)</label>
+                            <input type="number" id="alturaCapa" step="0.01" placeholder="Ej: 0.2">
+                            <small>Calidad: 0.1mm (alta) - 0.3mm (rápida)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Soportes requeridos</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="soportes" value="Si"> Sí</label>
+                                <label><input type="radio" name="soportes" value="No"> No</label>
+                                <label><input type="radio" name="soportes" value="No sé"> No sé</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Dimensiones aproximadas (opcional)</label>
+                        <div class="form-row">
+                            <input type="number" id="largo" placeholder="Largo (mm)">
+                            <input type="number" id="ancho" placeholder="Ancho (mm)">
+                            <input type="number" id="alto" placeholder="Alto (mm)">
+                        </div>
+                        <small>Solo si conoces las dimensiones finales deseadas</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: Uso Previsto -->
+            <div class="form-section">
+                <h2>4. Uso Previsto</h2>
+                
+                <div class="form-group">
+                    <label for="usoPrevisto">Descripción del propósito/aplicación</label>
+                    <textarea id="usoPrevisto" rows="3" placeholder="Ej: Material de estudio, demostración en taller, etc."></textarea>
+                    <small>Ayuda a optimizar la impresión según el uso</small>
+                </div>
+            </div>
+
+            <!-- SECTION 5: Observaciones -->
+            <div class="form-section">
+                <h2>5. Observaciones Adicionales</h2>
+                
+                <div class="form-group">
+                    <label for="observaciones">Comentarios o requerimientos especiales</label>
+                    <textarea id="observaciones" rows="3" placeholder="Ej: Necesito que sea flexible, debe ser resistente a agua, etc."></textarea>
+                </div>
+            </div>
+
+            <!-- FORM ACTIONS -->
+            <div class="form-actions">
+                <button type="button" onclick="generatePDF()" class="btn btn-accent">
+                    📄 GENERAR ORDEN DE TRABAJO
+                </button>
+                <button type="button" id="emailButton" onclick="openEmail()" class="btn">
+                    📧 ENVIAR POR EMAIL
+                </button>
+            </div>
+
+            <!-- SUCCESS MESSAGE -->
+            <div id="successMessage" class="success-message">
+                <h3>✅ Orden de Trabajo generada exitosamente</h3>
+                <p>El archivo PDF se ha descargado en tu carpeta de descargas.</p>
+                <p><strong>📎 IMPORTANTE:</strong> Al hacer clic en "Enviar por Email", recuerda adjuntar manualmente el archivo PDF descargado.</p>
+            </div>
+        </form>
+    </div>    
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 MonteVer3D - Universidad Austral de Chile, Puerto Montt</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Proyecto de Conservación Digital del Patrimonio | Desarrollado por TecMedHUB 
+                <a href="mailto:fernanda.lopez@uach.cl" style="color: var(--color-primary);">fernanda.lopez@uach.cl</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="js/nav.js"></script>
+    <script src="js/solicitar-impresion.js"></script>
+</body>
+</html>

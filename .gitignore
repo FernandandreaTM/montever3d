@@ -1,0 +1,18 @@
+cat > .gitignore << 'EOF'
+# PHP Backend (NO subir)
+auth-config.php
+login.php
+logout.php
+check-auth.php
+config.php
+upload-model.php
+delete-model.php
+api/
+
+# Admin sensible
+admin/api/
+
+# Sistema
+.DS_Store
+Thumbs.db
+EOF

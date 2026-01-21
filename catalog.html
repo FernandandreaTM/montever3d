@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - MonteVer3D</title>
+    <meta name="description" content="Explora nuestra colección de modelos arqueológicos 3D. Filtra por categoría, tipo y origen">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/catalog.css">
+</head>
+<body>
+    <!-- HEADER & NAVIGATION -->
+    <header>
+        <nav>
+            <a href="index.html#inicio" target="_blank" rel="noopener noreferrer">
+            <div class="logo-container">
+                <img src="images/logo/logo-monteverde.png" alt="MonteVer3D Logo" class="logo-monteverde">
+                <img src="images/logo/logo-uach.png" alt="Universidad Austral de Chile" class="logo-uach">
+            </div>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">INICIO</a></li>
+                <li><a href="catalog.html" class="active">CATÁLOGO</a></li>
+                <li><a href="casos.html">CASOS DE USO</a></li>
+                <li><a href="index.html#como-funciona">CÓMO FUNCIONA</a></li>
+                <li><a href="about.html">ACERCA DE</a></li>
+                <li><a href="index.html#cta-section">CONTRIBUIR</a></li>
+                <li><a href="index.html#cta-section">CONTACTO</a></li>
+            </ul>
+            
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+    <!-- Admin Link -->
+    <a href="admin/index.html" class="admin-link" title="Panel de Administración">🔐</a>
+
+    <style>
+    .admin-link {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(26, 26, 26, 0.8);
+        color: var(--color-primary);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        z-index: 9999;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .admin-link:hover {
+        background: var(--color-primary);
+        transform: scale(1.1);
+        color: var(--color-dark);
+    }
+    </style>
+    <!-- CATALOG HEADER -->
+    <section class="catalog-header">
+        <div class="container">
+            <h1>Catálogo de Modelos</h1>
+            <p>Explora nuestra colección de modelos arqueológicos digitalizados para conservación, educación e investigación</p>
+        </div>
+    </section>
+
+    <!-- CATALOG MAIN -->
+    <section class="catalog-main">
+        <div class="container">
+            <!-- Search and Controls -->
+            <div class="catalog-controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar modelos..." aria-label="Buscar modelos">
+                    <span class="search-icon">🔍</span>
+                </div>
+                
+                <div class="view-controls">
+                    <button id="viewGrid" class="view-btn active" title="Vista de cuadrícula" aria-label="Vista de cuadrícula">
+                        <span>▦</span>
+                    </button>
+                    <button id="viewList" class="view-btn" title="Vista de lista" aria-label="Vista de lista">
+                        <span>☰</span>
+                    </button>
+                </div>
+
+                <div class="sort-controls">
+                    <label for="sortSelect">Ordenar:</label>
+                    <select id="sortSelect" aria-label="Ordenar modelos">
+                        <option value="recent">Más recientes</option>
+                        <option value="alphabetical">A-Z</option>
+                        <option value="category">Categoría</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Catalog Content -->
+            <div class="catalog-content">
+                <!-- Filters Sidebar -->
+                <aside class="filters-sidebar">
+                    <div class="filters-header">
+                        <h3>Filtros</h3>
+                        <button id="resetFilters" class="btn-reset">Limpiar</button>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="filter-group">
+                        <h4>Categoría</h4>
+                        <div class="filter-options" id="categoryFilters">
+                            <!-- Dynamic checkboxes -->
+                        </div>
+                    </div>
+
+                    <!-- Type Filter -->
+                    <div class="filter-group">
+                        <h4>Tipo</h4>
+                        <div class="filter-options" id="typeFilters">
+                            <label>
+                                <input type="checkbox" value="completo" class="filter-checkbox" data-filter="type">
+                                <span>🏺 Completo</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" value="fragmento" class="filter-checkbox" data-filter="type">
+                                <span>🧩 Fragmento</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" value="reconstruccion" class="filter-checkbox" data-filter="type">
+                                <span>🔧 Reconstrucción</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Origin Filter -->
+                    <div class="filter-group">
+                        <h4>Origen</h4>
+                        <div class="filter-options" id="originFilters">
+                            <label>
+                                <input type="checkbox" value="externo" class="filter-checkbox" data-filter="origin">
+                                <span>🌐 Externo</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" value="modificado" class="filter-checkbox" data-filter="origin">
+                                <span>✏️ Modificado</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" value="original" class="filter-checkbox" data-filter="origin">
+                                <span>⭐ Digitalizado por MonteVer3D</span>
+                            </label>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Models Display -->
+                <div class="models-container">
+                    <div class="results-info">
+                        <span id="resultsCount">0 modelos encontrados</span>
+                    </div>
+                    
+                    <div id="modelsGrid" class="models-grid view-grid">
+                        <!-- Dynamic model cards -->
+                    </div>
+
+                    <!-- No Results -->
+                    <div id="noResults" class="no-results" style="display: none;">
+                        <span class="no-results-icon">🔍</span>
+                        <h3>No se encontraron modelos</h3>
+                        <p>Intenta ajustar los filtros o términos de búsqueda</p>
+                        <button class="btn" onclick="document.getElementById('resetFilters').click()">
+                            Limpiar filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 MonteVer3D - Universidad Austral de Chile, Puerto Montt</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Proyecto de Conservación Digital del Patrimonio | Desarrollado por TecMedHUB
+                <a href="mailto:fernanda.lopez@uach.cl" style="color: var(--color-primary);">fernanda.lopez@uach.cl</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="js/nav.js"></script>
+    <script src="js/catalog.js"></script>
+</body>
+</html>

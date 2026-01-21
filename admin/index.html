@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - MonteVer3D</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <img src="../images/logo/logo-monteverde.png" alt="MonteVer3D" class="login-logo">
+            <h1>Panel de Administración</h1>
+            <p>Ingresa la contraseña para continuar</p>
+            
+            <form id="loginForm" onsubmit="login(event)">
+                <div class="password-input-container">
+                    <input 
+                        type="password" 
+                        id="passwordInput" 
+                        placeholder="Contraseña"
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        👁️
+                    </button>
+                </div>
+                <button type="submit" class="btn">Ingresar</button>
+                <p id="loginError" class="error-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="admin-panel" style="display: none;">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <img src="../images/logo/logo-monteverde.png" alt="MonteVer3D" class="admin-logo">
+                <h1>Panel de Administración</h1>
+                <div class="header-actions">
+                    <a href="../catalog.html?admin=true" class="btn" target="_blank">
+                        📚 Ver Catálogo
+                    </a>
+                    <button onclick="logout()" class="btn btn-secondary">Cerrar Sesión</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="admin-content">
+            <!-- Edit Mode Selector -->
+            <div class="mode-selector">
+                <button onclick="switchMode('new')" id="btnModeNew" class="mode-btn active">
+                    ➕ Nuevo Modelo
+                </button>
+                <button onclick="switchMode('edit')" id="btnModeEdit" class="mode-btn">
+                    ✏️ Editar Existente
+                </button>
+                <button onclick="switchMode('duplicate')" id="btnModeDuplicate" class="mode-btn">
+                    📋 Duplicar Existente
+                </button>
+            </div>
+
+            <!-- Edit Model Selector -->
+            <div id="editModelSelector" class="edit-selector" style="display: none;">
+                <label for="selectModel">Seleccionar modelo:</label>
+                <select id="selectModel" onchange="loadModelForEdit()">
+                    <option value="">-- Seleccionar --</option>
+                </select>
+                <button type="button" onclick="deleteModel()" class="btn btn-secondary" 
+                        style="background: var(--color-accent); color: white; white-space: nowrap;"
+                        id="deleteModelBtn" disabled>
+                    🗑️ Eliminar
+                </button>
+            </div>
+
+            <div class="admin-grid">
+                <!-- LEFT: Form -->
+                <div class="form-section">
+                    <div class="form-header">
+                        <h2 id="formTitle">Agregar Nuevo Modelo</h2>
+                        <button onclick="autoFillExample()" class="btn-auto" title="Auto-completar con ejemplo">
+                            ⚡ Auto-completar
+                        </button>
+                    </div>
+                    
+                    <form id="modelForm" class="model-form">
+                        <!-- Basic Info -->
+                        <div class="form-group">
+                            <label for="modelTitle">Título del Modelo *</label>
+                            <input type="text" id="modelTitle" required 
+                                placeholder="Presiona Tab para ejemplo: Vértebra Lumbar Completa"
+                                oninput="generateId(); updatePreview(); autoSave()">
+                            <small>El ID se generará automáticamente</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ID del Modelo</label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="text" id="modelId" 
+                                    placeholder="Se genera automáticamente del título"
+                                    oninput="checkIdChanged()">
+                                <button type="button" id="updatePathsBtn" 
+                                        onclick="updateAllPaths()" 
+                                        class="btn-update-paths" 
+                                        style="display: none;">
+                                    🔄 Actualizar Paths
+                                </button>
+                            </div>
+                            <small>Edita manualmente si necesitas un ID específico</small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="modelCategory">Categoría *</label>
+                                <input type="text" id="modelCategory" list="categoryList" required 
+                                    placeholder="Selecciona o escribe una nueva categoría"
+                                    oninput="updatePreview(); autoSave()">
+                                <datalist id="categoryList">
+                                    <option value="Cerámico">
+                                    <option value="Lítico">
+                                    <option value="Estructuras">
+                                    <option value="Restos Óseos">
+                                    <option value="Textil">
+                                    <option value="Metálico">
+                                    <option value="Contexto">
+                                </datalist>
+                                <small>💡 Puedes seleccionar de la lista o escribir una nueva</small>
+                            </div>                           
+
+                            <div class="form-group">
+                                <label for="modelType">Tipo *</label>
+                                <select id="modelType" required onchange="updatePreview(); autoSave()">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Completo">Completo</option>
+                                    <option value="Fragmento">Fragmento</option>
+                                    <option value="Reconstrucción">Reconstrucción</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- FUENTE -->
+                        <div class="form-group">
+                            <label>Fuente *</label>
+                            <div class="radio-group">
+                                <label>
+                                    <input type="radio" name="source" value="Externo" 
+                                        onchange="toggleSourceFields()" checked>
+                                    <span>🌐 Externo</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="source" value="Interno" 
+                                        onchange="toggleSourceFields()">
+                                    <span>⭐ Interno (MonteVer3D)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- CAMPOS EXTERNOS -->
+                        <div id="externalFields" style="display: block;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Estado del modelo *</label>
+                                    <div class="radio-group">
+                                        <label>
+                                            <input type="radio" name="sourceStatus" value="Original" 
+                                                onchange="toggleModifications()" checked>
+                                            <span>Original</span>
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="sourceStatus" value="Modificado" 
+                                                onchange="toggleModifications()">
+                                            <span>Modificado</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="sourceName">Nombre de la fuente *</label>
+                                    <input type="text" id="sourceName" list="sourceNameList"
+                                        placeholder="Selecciona o escribe una fuente"
+                                        oninput="updatePreview(); autoSave()">
+                                    <datalist id="sourceNameList">
+                                        <option value="Colección Digital Arqueológica">
+                                        <option value="Zenodo">
+                                        <option value="Open Context">
+                                        <option value="tDAR">
+                                        <option value="Sketchfab">
+                                        <option value="MorphoSource">
+                                        <option value="AriadnePlus">
+                                        <option value="CyArk">
+                                        <option value="Smithsonian 3D">
+                                        <option value="British Museum">
+                                    </datalist>
+                                    <small>💡 Selecciona de la lista o escribe una nueva fuente</small>
+                                </div>
+                            </div>
+
+                            <div id="modificationsField" style="display: none;">
+                                <div class="form-group">
+                                    <label for="modifications">Modificaciones realizadas</label>
+                                    <textarea id="modifications" rows="2"
+                                            placeholder="Tab: Reparado y optimizado para impresión por LABIM3D"
+                                            oninput="updatePreview(); autoSave()"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MÉTODO DE CREACIÓN -->
+                        <div class="form-group">
+                            <label>Método de creación *</label>
+                            <div class="radio-group">
+                                <label>
+                                    <input type="radio" name="origin" value="Escáner" 
+                                        onchange="updatePreview(); autoSave()" checked>
+                                    <span>📷 Escáner</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="origin" value="Modelado" 
+                                        onchange="updatePreview(); autoSave()">
+                                    <span>🎨 Modelado</span>
+                                </label>
+                            </div>
+                            <small>¿Cómo se creó el modelo original? (escaneado 3D o modelado en software)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="modelDescription">Descripción *</label>
+                            <textarea id="modelDescription" required rows="3"
+                                    placeholder="Tab: Anatomía vertebral completa con cuerpo, apófisis espinosa..."
+                                    oninput="updatePreview(); autoSave()"></textarea>
+                        </div>
+
+                        <!-- ATRIBUCIÓN -->
+                        <div class="form-section-header" style="margin-top: 2rem;">
+                            <h3>📜 Atribución y Licencia</h3>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="creator">Creador/Autor *</label>
+                                <input type="text" id="creator" required
+                                    placeholder="Tab: neurothing"
+                                    oninput="updatePreview(); autoSave()">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="creatorUrl">URL del creador (opcional)</label>
+                                <input type="url" id="creatorUrl"
+                                    placeholder="Tab: https://www.thingiverse.com/neurothing"
+                                    oninput="updatePreview(); autoSave()">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                        <div class="form-group">
+                            <label for="modelLicense">Licencia *</label>
+                            <input type="text" id="modelLicense" list="licenseList" required
+                                placeholder="Selecciona o escribe una licencia"
+                                oninput="updatePreview(); autoSave(); updateLicenseUrl()">
+                            <datalist id="licenseList">
+                                <option value="CC BY 4.0">
+                                <option value="CC BY-SA 4.0">
+                                <option value="CC BY-NC 4.0">
+                                <option value="CC BY-NC-SA 4.0">
+                                <option value="CC BY-ND 4.0">
+                                <option value="CC0 1.0 Universal">
+                                <option value="MIT License">
+                                <option value="GPL v3">
+                                <option value="Apache 2.0">
+                                <option value="Public Domain">
+                            </datalist>
+                            <small>💡 Selecciona de la lista o escribe una licencia personalizada</small>
+                        </div>
+                            <div class="form-group">
+                                <label for="licenseUrl">URL de la licencia *</label>
+                                <input type="url" id="licenseUrl" list="licenseUrlList" required
+                                    placeholder="Se auto-completa o escribe una URL personalizada"
+                                    oninput="updatePreview(); autoSave()">
+                                <datalist id="licenseUrlList">
+                                    <option value="https://creativecommons.org/licenses/by/4.0/">
+                                    <option value="https://creativecommons.org/licenses/by-sa/4.0/">
+                                    <option value="https://creativecommons.org/licenses/by-nc/4.0/">
+                                    <option value="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                                    <option value="https://creativecommons.org/licenses/by-nd/4.0/">
+                                    <option value="https://creativecommons.org/publicdomain/zero/1.0/">
+                                    <option value="https://opensource.org/licenses/MIT">
+                                    <option value="https://www.gnu.org/licenses/gpl-3.0.html">
+                                    <option value="https://www.apache.org/licenses/LICENSE-2.0">
+                                </datalist>
+                                <small>✨ Se completa automáticamente al seleccionar una licencia</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="externalSource">URL Fuente Original</label>
+                            <input type="url" id="externalSource"
+                                placeholder="Tab: https://www.thingiverse.com/thing:27340"
+                                oninput="updatePreview(); autoSave()">
+                            <small>Enlace directo al modelo en la fuente original</small>
+                        </div>
+
+                        <!-- 📦 SUBIR ARCHIVOS STL -->
+                        <div class="form-section-header" style="margin-top: 2rem;">
+                            <h3>📦 Archivos STL</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="stlFilesInput">Seleccionar archivos STL *</label>
+                            <input type="file" id="stlFilesInput" multiple accept=".stl" 
+                                onchange="previewMultipleSTL(this)" required>
+                            <small>Puedes seleccionar múltiples archivos a la vez</small>
+                        </div>
+
+                        <!-- Contenedor para preview de STL -->
+                        <div id="stlFilesPreview" class="stl-files-preview">
+                            <!-- Se genera dinámicamente -->
+                        </div>
+
+                        <!-- 🖼️ SUBIR IMÁGENES -->
+                        <div class="form-section-header" style="margin-top: 2rem;">
+                            <h3>🖼️ Imágenes del Modelo</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="galleryImagesInput">Seleccionar imágenes</label>
+                            <input type="file" id="galleryImagesInput" multiple accept="image/jpeg,image/png,image/jpg" 
+                                onchange="previewGalleryImages(this)">
+                            <small>Puedes seleccionar múltiples imágenes - luego elige cuál será el thumbnail</small>
+                        </div>
+
+                        <!-- Contenedor para preview de imágenes -->
+                        <div id="galleryImagesPreview" class="gallery-images-preview">
+                            <!-- Se genera dinámicamente -->
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="form-group">
+                            <label for="modelTags">Tags (separados por coma)</label>
+                            <input type="text" id="modelTags"
+                                placeholder="Tab: ceramica, monte verde, arcaico, fragmento"
+                                oninput="updatePreview(); autoSave()">
+                        </div>
+
+                        <!-- NOTAS ADICIONALES -->
+                        <div class="form-section-header" style="margin-top: 2rem;">
+                            <h3>📝 Notas Adicionales</h3>
+                            <button type="button" onclick="addNote()" class="btn-add">+ Agregar Nota</button>
+                        </div>
+
+                        <div id="notesContainer" class="notes-container">
+                            <!-- Notes will be added here dynamically -->
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="form-actions">
+                            <button type="button" onclick="uploadModel()" class="btn btn-accent">
+                                💾 GUARDAR MODELO
+                            </button>
+                            <button type="button" onclick="resetForm()" class="btn btn-secondary">
+                                🔄 LIMPIAR FORMULARIO
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- RIGHT: Preview & Output -->
+                <div class="preview-section">
+                    <h2>Preview & Output</h2>
+                    
+                    <!-- Auto-save indicator -->
+                    <div id="autoSaveIndicator" class="auto-save-indicator">
+                        💾 Guardado automático activo
+                    </div>
+
+                    <!-- JSON Preview -->
+                    <div class="preview-card">
+                        <div class="preview-header">
+                            <h3>JSON Generado</h3>
+                            <div class="preview-actions">
+                                <button onclick="copyJSON()" class="btn-copy" id="copyBtn">
+                                    📋 Copiar
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="jsonPreview" class="json-preview">// Completa el formulario para ver el preview</pre>
+                    </div>
+
+                    <!-- File Checklist -->
+                    <div class="preview-card">
+                        <h3>Resumen de Archivos</h3>
+                        <div id="fileChecklist" class="file-checklist">
+                            <p class="placeholder">Selecciona archivos para ver el resumen</p>
+                        </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="preview-card instructions">
+                        <h3>📋 Instrucciones</h3>
+                        <ol>
+                            <li>Completa el formulario (campos marcados con * son requeridos)</li>
+                            <li>Usa <kbd>Tab</kbd> en los campos para auto-completar ejemplos</li>
+                            <li>Selecciona todos los archivos STL necesarios</li>
+                            <li>Selecciona imágenes y elige cuál será el thumbnail</li>
+                            <li>Agrega notas adicionales si es necesario</li>
+                            <li>El formulario se guarda automáticamente en localStorage</li>
+                            <li>Click en <kbd>💾 GUARDAR MODELO</kbd> para subir todo al servidor</li>
+                            <li>Los archivos se subirán y organizarán automáticamente</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
