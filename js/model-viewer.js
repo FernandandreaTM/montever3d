@@ -674,7 +674,6 @@ function loadOBJ(index) {
     // Intentar cargar MTL primero
     const mtlLoader = new THREE.MTLLoader();
     mtlLoader.setPath(texturePath); // Carpeta base para texturas
-    mtlLoader.setTexturePath(texturePath);
     mtlLoader.load(
         mtlFileName, // Solo nombre del archivo, sin path
         function(materials) {
