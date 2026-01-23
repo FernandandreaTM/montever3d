@@ -938,3 +938,62 @@ function closeRotationHint() {
         hint.classList.remove('active');
     }
 }
+
+// ===== MATERIAL MODE TOGGLE =====
+let materialMode = 'texture'; // texture, wireframe, solid, normals
+let originalMaterial = null;
+
+function toggleMaterialMode() {
+    if (!currentMesh) return;
+    
+    const modes = ['texture', 'solid', 'wireframe', 'normals'];
+    const currentIndex = modes.indexOf(materialMode);
+    materialMode = modes[(currentIndex + 1) % modes.length];
+    
+    currentMesh.traverse(function(child) {
+        if (child instanceof THREE.Mesh) {
+            // Guardar material original la primera vez
+            if (!originalMaterial && child.material.map) {
+                originalMaterial = child.material.clone();
+            }
+            
+            switch(materialMode) {
+                case 'texture':
+                    if (originalMaterial) {
+                        child.material = originalMaterial.clone();
+                        child.material.needsUpdate = true;
+                    }
+                    break;
+                    
+                case 'solid':
+                    child.material = new THREE.MeshPhongMaterial({
+                        color: 0xcccccc,
+                        flatShading: false
+                    });
+                    break;
+                    
+                case 'wireframe':
+                    child.material = new THREE.MeshBasicMaterial({
+                        color: 0x00ff00,
+                        wireframe: true
+                    });
+                    break;
+                    
+                case 'normals':
+                    child.material = new THREE.MeshNormalMaterial();
+                    break;
+            }
+        }
+    });
+    
+    // Actualizar label
+    const modeLabels = {
+        'texture': 'Textura',
+        'solid': 'Sólido',
+        'wireframe': 'Wireframe',
+        'normals': 'Normales'
+    };
+    document.getElementById('materialModeLabel').textContent = modeLabels[materialMode];
+    
+    console.log('🎨 Material mode:', materialMode);
+}
