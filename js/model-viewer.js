@@ -735,6 +735,34 @@ function loadOBJ(index) {
     
     function loadOBJGeometry(loader, path) {
         loader.load(path, function(object) {
+            console.log('🎨 OBJ Object loaded, inspecting...');
+            console.log('🎨 Object:', object);
+            
+            let meshCount = 0;
+            object.traverse(function(child) {
+                if (child instanceof THREE.Mesh) {
+                    meshCount++;
+                    console.log(`🔍 Mesh #${meshCount}:`, child.name || 'unnamed');
+                    console.log('  Material:', child.material);
+                    console.log('  Material type:', child.material ? child.material.type : 'none');
+                    
+                    if (child.material) {
+                        console.log('  Color:', child.material.color);
+                        console.log('  Map (texture):', child.material.map);
+                        
+                        if (child.material.map) {
+                            console.log('✅ Has texture map!');
+                            console.log('  Texture image:', child.material.map.image);
+                            console.log('  Texture source:', child.material.map.image ? child.material.map.image.src : 'no source');
+                        } else {
+                            console.log('❌ No texture map found');
+                        }
+                    }
+                }
+            });
+            
+            console.log(`Total meshes found: ${meshCount}`);
+            
             // Si no tiene materiales MTL, aplicar material dorado
             if (!object.material) {
                 object.traverse(function(child) {
