@@ -441,18 +441,38 @@ function initialize3DViewer() {
     
     document.getElementById('viewerSection').style.display = 'block';
     
-    // Multi-file selector (si hay más de 1 archivo)
-    if (currentModel['3dFiles'] && currentModel['3dFiles'].length > 1) {
+    // Buscar primer archivo 3D real (STL o OBJ)
+    let firstModelIndex = -1;
+    for (let i = 0; i < currentModel['3dFiles'].length; i++) {
+        const ext = currentModel['3dFiles'][i].path.toLowerCase().split('.').pop();
+        if (ext === 'stl' || ext === 'obj') {
+            firstModelIndex = i;
+            break;
+        }
+    }
+    
+    if (firstModelIndex === -1) {
+        console.error('No 3D model files found');
+        return;
+    }
+    
+    // Multi-file selector (si hay más de 1 archivo 3D)
+    const modelFilesCount = currentModel['3dFiles'].filter(f => {
+        const ext = f.path.toLowerCase().split('.').pop();
+        return ext === 'stl' || ext === 'obj';
+    }).length;
+    
+    if (modelFilesCount > 1) {
         createSTLSelector();
     }
     
     // Detectar formato y cargar
-    const ext = file3D.path.toLowerCase().split('.').pop();
+    const ext = currentModel['3dFiles'][firstModelIndex].path.toLowerCase().split('.').pop();
     
     if (ext === 'obj') {
-        loadOBJ(0);
+        loadOBJ(firstModelIndex);
     } else {
-        loadSTL(0);
+        loadSTL(firstModelIndex);
     }
 }
 
@@ -460,8 +480,20 @@ function createSTLSelector() {
     const container = document.getElementById('modelViewer');
     const selector = document.createElement('div');
     selector.id = 'stlSelector';
-    selector.style.cssText = 'position:absolute;top:1rem;left:1rem;z-index:100;background:rgba(255,255,255,0.95);padding:0.75rem 1rem;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:flex;align-items:center;gap:0.5rem;';
-    selector.innerHTML = '<label style="font-weight:600;color:var(--color-secondary);font-size:0.9rem;">Archivo STL:</label><select id="stlSelect" style="padding:0.5rem;border:2px solid var(--color-light-gray);border-radius:8px;font-size:0.9rem;cursor:pointer;background:white;" onchange="changeSTL(this.value)">' + currentModel['3dFiles'].map((file,index) => '<option value="'+index+'">'+file.name+' ('+file.fileSize+')</option>').join('') + '</select>';
+    
+    // Filtrar solo archivos de modelos 3D (.stl, .obj)
+    const modelFiles = currentModel['3dFiles']
+        .map((file, originalIndex) => ({ file, originalIndex }))
+        .filter(item => {
+            const ext = item.file.path.toLowerCase().split('.').pop();
+            return ext === 'stl' || ext === 'obj';
+        });
+    
+    selector.innerHTML = '<label style="font-weight:600;color:var(--color-secondary);font-size:0.9rem;">Archivo 3D:</label><select id="stlSelect" style="padding:0.5rem;border:2px solid var(--color-light-gray);border-radius:8px;font-size:0.9rem;cursor:pointer;background:white;" onchange="changeSTL(this.value)">' + 
+        modelFiles.map(item => 
+            '<option value="'+item.originalIndex+'">'+item.file.name+' ('+item.file.fileSize+')</option>'
+        ).join('') + 
+        '</select>';
     container.appendChild(selector);
 }
 
