@@ -754,7 +754,23 @@ function loadOBJ(index) {
                             console.log('✅ Has texture map!');
                             console.log('  Texture image:', child.material.map.image);
                             console.log('  Texture source:', child.material.map.image ? child.material.map.image.src : 'no source');
-                        } else {
+                            
+                            // CRITICAL: Esperar a que la textura cargue
+                            const texture = child.material.map;
+                            if (texture.image && !texture.image.complete) {
+                                console.log('⏳ Waiting for texture to load...');
+                                texture.image.onload = function() {
+                                    console.log('✅ Texture loaded!');
+                                    texture.needsUpdate = true;
+                                    child.material.needsUpdate = true;
+                                };
+                            } else {
+                                console.log('✅ Texture already loaded');
+                                texture.needsUpdate = true;
+                                child.material.needsUpdate = true;
+                            }
+                        }
+                        else {
                             console.log('❌ No texture map found');
                         }
                     }
