@@ -708,6 +708,7 @@ function collectFormData() {
     });
     
     // Luego agregar nuevos
+    // Luego agregar nuevos
     selectedSTLFiles.forEach((file, index) => {
         const nameInput = document.querySelector(`.stl-name-input[data-index="${index}"]`);
         
@@ -720,15 +721,10 @@ function collectFormData() {
         
         const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
         
-        // Para texturas (jpg/png), usar nombre original sin customName
-        let finalName = customName;
-        let finalPath = `models/${id}/${customName}.${fileExt}`;
-
-        if (fileExt === 'jpg' || fileExt === 'jpeg' || fileExt === 'png') {
-            finalName = file.name; // Mantener nombre original para texturas
-            finalPath = `models/${id}/${file.name}`; // Path con nombre original
-        }
-
+        // TODOS los archivos usan nombre completo con extensión
+        const finalName = `${customName}.${fileExt}`;
+        const finalPath = `models/${id}/${customName}.${fileExt}`;
+        
         stlFiles.push({
             id: customName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
             name: finalName,
