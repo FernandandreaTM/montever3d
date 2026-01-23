@@ -780,8 +780,6 @@ function loadOBJ(index) {
             console.log(`Total meshes found: ${meshCount}`);
             
             // Si no tiene materiales MTL, aplicar material dorado
-            // (This logic is flawed — child meshes have materials even if object.material is null)
-            /*
             if (!object.material) {
                 object.traverse(function(child) {
                     if (child instanceof THREE.Mesh) {
@@ -795,7 +793,6 @@ function loadOBJ(index) {
                     }
                 });
             }
-            */
             
             currentMesh = object;
             
@@ -812,8 +809,7 @@ function loadOBJ(index) {
             object.position.y += size.y * scale / 2 - 40;
             
             scene.add(object);
-            saveOriginalMaterialConfigs(object);
-
+            
             // Update camera
             const meshSize = size.multiplyScalar(scale);
             controls.target.set(0, meshSize.y / 2 - 40, 0);
