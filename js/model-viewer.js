@@ -704,17 +704,30 @@ function loadOBJ(index) {
     const objLoader = new THREE.OBJLoader();
 
     // Intentar cargar MTL primero
+    console.log('🔍 Attempting to load MTL:', mtlFileName);
+    console.log('🔍 MTL path set to:', texturePath);
+    console.log('🔍 Full MTL path would be:', texturePath + mtlFileName);
+
     const mtlLoader = new THREE.MTLLoader();
-    mtlLoader.setPath(texturePath); // Carpeta base para texturas
+    mtlLoader.setPath(texturePath); // Carpeta base TAMBIÉN para texturas en r84
     mtlLoader.load(
         mtlFileName, // Solo nombre del archivo, sin path
         function(materials) {
+            console.log('✅ MTL loaded successfully!');
+            console.log('📦 Materials object:', materials);
+            console.log('📦 Material names:', Object.keys(materials.materials));
             materials.preload();
+            console.log('✅ Materials preloaded');
             objLoader.setMaterials(materials);
+            console.log('✅ Materials set to OBJLoader');
             loadOBJGeometry(objLoader, objPath);
         },
-        undefined,
+        function(xhr) {
+            console.log('📊 MTL loading progress:', (xhr.loaded / xhr.total * 100) + '%');
+        },
         function(error) {
+            console.log('❌ MTL loading failed');
+            console.log('❌ Error details:', error);
             console.log('No MTL file found, using default material');
             loadOBJGeometry(objLoader, objPath);
         }
