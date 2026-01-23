@@ -940,8 +940,8 @@ function closeRotationHint() {
 }
 
 // ===== MATERIAL MODE TOGGLE =====
-let materialMode = 'texture'; // texture, wireframe, solid, normals
-let originalMaterial = null;
+let materialMode = 'texture';
+let originalMaterials = new Map(); // Guardar por mesh
 
 function toggleMaterialMode() {
     if (!currentMesh) return;
@@ -953,23 +953,31 @@ function toggleMaterialMode() {
     currentMesh.traverse(function(child) {
         if (child instanceof THREE.Mesh) {
             // Guardar material original la primera vez
-            if (!originalMaterial && child.material.map) {
-                originalMaterial = child.material.clone();
+            if (!originalMaterials.has(child.uuid)) {
+                originalMaterials.set(child.uuid, child.material);
+                console.log('💾 Saved original material for mesh:', child.uuid);
             }
+            
+            const originalMat = originalMaterials.get(child.uuid);
             
             switch(materialMode) {
                 case 'texture':
-                    if (originalMaterial) {
-                        child.material = originalMaterial.clone();
-                        child.material.needsUpdate = true;
+                    // Restaurar el material original SIN clonar
+                    child.material = originalMat;
+                    console.log('🎨 Restored texture material');
+                    console.log('  Has map:', !!child.material.map);
+                    if (child.material.map) {
+                        child.material.map.needsUpdate = true;
+                        console.log('  Texture source:', child.material.map.image ? child.material.map.image.src : 'no image');
                     }
                     break;
                     
                 case 'solid':
                     child.material = new THREE.MeshPhongMaterial({
                         color: 0xcccccc,
-                        flatShading: false
+                        side: THREE.DoubleSide
                     });
+                    console.log('🎨 Applied solid material');
                     break;
                     
                 case 'wireframe':
@@ -977,12 +985,16 @@ function toggleMaterialMode() {
                         color: 0x00ff00,
                         wireframe: true
                     });
+                    console.log('🎨 Applied wireframe material');
                     break;
                     
                 case 'normals':
                     child.material = new THREE.MeshNormalMaterial();
+                    console.log('🎨 Applied normals material');
                     break;
             }
+            
+            child.material.needsUpdate = true;
         }
     });
     
@@ -995,5 +1007,5 @@ function toggleMaterialMode() {
     };
     document.getElementById('materialModeLabel').textContent = modeLabels[materialMode];
     
-    console.log('🎨 Material mode:', materialMode);
+    console.log('🎨 Material mode changed to:', materialMode);
 }
