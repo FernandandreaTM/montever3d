@@ -1,0 +1,51 @@
+{
+    "id": "vasija-cultura-nnnn",
+    "title": "Vasija Cultura Nnnn",
+    "category": "Cerámico",
+    "type": "Fragmento",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "source": "Interno",
+    "sourceStatus": null,
+    "sourceName": null,
+    "origin": "Escáner",
+    "creator": "MonteVer3D",
+    "creatorUrl": null,
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https:\/\/creativecommons.org\/licenses\/by-sa\/4.0\/",
+    "modifications": null,
+    "externalSourceUrl": null,
+    "images": {
+        "thumbnail": "images\/models\/vasija-cultura-nnnn\/thumb.jpg",
+        "gallery": [
+            "images\/models\/vasija-cultura-nnnn\/gallery-1.jpg",
+            "images\/models\/vasija-cultura-nnnn\/gallery-2.jpg"
+        ]
+    },
+    "3dFiles": [
+        {
+            "id": "011501tex",
+            "name": "0115_01_tex.jpg",
+            "path": "models\/vasija-cultura-nnnn\/0115_01_tex.jpg",
+            "fileSize": "0.72 MB"
+        },
+        {
+            "id": "011501tex",
+            "name": "0115_01_tex.obj",
+            "path": "models\/vasija-cultura-nnnn\/0115_01_tex.obj",
+            "fileSize": "14.01 MB"
+        },
+        {
+            "id": "011501tex",
+            "name": "0115_01_tex.mtl",
+            "path": "models\/vasija-cultura-nnnn\/0115_01_tex.mtl",
+            "fileSize": "0.00 MB"
+        }
+    ],
+    "notes": [],
+    "datasheetUrl": null,
+    "tags": [
+        "cerámica",
+        "fragmento"
+    ],
+    "dateAdded": "2026-01-23"
+}

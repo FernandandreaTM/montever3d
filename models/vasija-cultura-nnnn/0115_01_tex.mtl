@@ -1,0 +1,10 @@
+# created by revopoint 3D
+
+newmtl material_0
+Ka 1.000 1.000 1.000
+Kd 0.800 0.800 0.800
+Ks 0.000 0.000 0.000
+Ns 10.000
+d 1.0
+illum 2
+map_Kd 0115_01_tex.jpg
