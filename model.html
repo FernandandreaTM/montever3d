@@ -106,6 +106,19 @@
                         </button>
                     </div>
                     
+                    <!-- Background Selector -->
+                    <div class="control-group">
+                        <select class="viewer-control-select" onchange="setBackground(this.value)" title="Fondo de escena">
+                            <option value="default">🏞️ Predeterminado</option>
+                            <option value="transparent">⬜ Transparente</option>
+                            <option value="white">⚪ Blanco</option>
+                            <option value="black">⚫ Negro</option>
+                            <option value="gradient-green">🌲 Verde</option>
+                            <option value="gradient-blue">🌊 Azul</option>
+                            <option value="grid-only">📐 Solo Grid</option>
+                        </select>
+                    </div>
+
                     <!-- Reset -->
                     <button class="viewer-reset-btn" onclick="resetAndScroll()" title="Resetear vista">
                         🔄

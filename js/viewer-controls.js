@@ -94,6 +94,22 @@ function toggleViewerFullscreen() {
     }
 }
 
+document.addEventListener('fullscreenchange', () => {
+    if (renderer && camera) {
+        const container = document.getElementById('modelViewer');
+        if (document.fullscreenElement) {
+            // Entrando a fullscreen
+            camera.aspect = window.innerWidth / window.innerHeight;
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        } else {
+            // Saliendo de fullscreen
+            camera.aspect = container.offsetWidth / 600;
+            renderer.setSize(container.offsetWidth, 600);
+        }
+        camera.updateProjectionMatrix();
+    }
+});
+
 // ===== RESET AND SCROLL =====
 function resetAndScroll() {
     sessionStorage.setItem('scrollToViewer', 'true');
@@ -122,4 +138,71 @@ function closeRotationHint() {
     if (hint) {
         hint.classList.remove('active');
     }
+}
+
+function setBackground(type) {
+    if (!scene) return;
+    
+    currentBackground = type;
+    
+    if (groundMesh) {
+        scene.remove(groundMesh);
+        groundMesh = null;
+    }
+    if (gridMesh) {
+        scene.remove(gridMesh);
+        gridMesh = null;
+    }
+    
+    switch(type) {
+        case 'default':
+            scene.background = null;
+            const groundGeometry = new THREE.PlaneGeometry(400, 400);
+            const groundMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xcccccc, 
+                side: THREE.DoubleSide, 
+                shininess: 0, 
+                transparent: true, 
+                opacity: 0.3 
+            });
+            groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+            groundMesh.rotation.x = -Math.PI / 2;
+            groundMesh.position.y = -40;
+            groundMesh.receiveShadow = true;
+            scene.add(groundMesh);
+            
+            gridMesh = new THREE.GridHelper(200, 20, 0x999999, 0xdddddd);
+            gridMesh.position.y = -39.9;
+            scene.add(gridMesh);
+            break;
+            
+        case 'transparent':
+            scene.background = null;
+            break;
+            
+        case 'white':
+            scene.background = new THREE.Color(0xffffff);
+            break;
+            
+        case 'black':
+            scene.background = new THREE.Color(0x000000);
+            break;
+            
+        case 'gradient-green':
+            scene.background = new THREE.Color(0x2F5233);
+            break;
+            
+        case 'gradient-blue':
+            scene.background = new THREE.Color(0x1a3a52);
+            break;
+            
+        case 'grid-only':
+            scene.background = null;
+            gridMesh = new THREE.GridHelper(200, 20, 0x999999, 0xdddddd);
+            gridMesh.position.y = -39.9;
+            scene.add(gridMesh);
+            break;
+    }
+    
+    console.log('Background changed to:', type);
 }

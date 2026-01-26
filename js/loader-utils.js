@@ -1,6 +1,9 @@
 // ===== LOADER-UTILS.JS - 3D Model Loading (STL/OBJ) =====
 
 let currentSTLIndex = 0;
+let groundMesh = null;
+let gridMesh = null;
+let currentBackground = 'default';
 
 // ===== GET 3D FILE (COMPATIBLE WITH BOTH SCHEMAS + AUTO-DETECT FORMAT) =====
 function get3DFile() {

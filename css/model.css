@@ -755,6 +755,33 @@
     color: var(--color-dark);
 }
 
+.viewer-control-select {
+    padding: 0.6rem 0.8rem;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--color-light-gray);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 160px;
+}
+
+.viewer-control-select:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.viewer-control-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(6, 214, 160, 0.1);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .model-grid {
