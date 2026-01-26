@@ -506,7 +506,6 @@ function loadSTL(index) {
     
     scene = new THREE.Scene();
     scene.background = null;
-    scene.fog = new THREE.Fog(0xe0e0e0, 100, 350);
     
     camera = new THREE.PerspectiveCamera(50, container.offsetWidth / 600, 0.1, 1000);
     camera.position.set(0, 30, 80);
@@ -648,7 +647,6 @@ function loadOBJ(index) {
     
     scene = new THREE.Scene();
     scene.background = null;
-    scene.fog = new THREE.Fog(0xe0e0e0, 100, 350);
     
     camera = new THREE.PerspectiveCamera(50, container.offsetWidth / 600, 0.1, 1000);
     camera.position.set(0, 30, 80);
