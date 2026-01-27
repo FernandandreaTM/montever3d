@@ -9,6 +9,7 @@ let scene, camera, renderer, controls, currentMesh;
 let isAutoRotating = false;
 let autoRotateAnimationId = null;
 
+
 // ===== INITIALIZE =====
 document.addEventListener('DOMContentLoaded', () => {
     loadModelData();
