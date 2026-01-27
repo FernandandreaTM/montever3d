@@ -1,14 +1,6 @@
 {
     "models": [
-        "aparato-vestibular",
-        "articulacion-de-hombro-funcional",
         "articulacion-hombro",
-        "articulacion-rodilla",
-        "oido-interno",
-        "oido-interno-nervios",
-        "pelvis-completa",
-        "vasija-cultura-nnnn",
-        "vertebra-lumbar",
-        "vertebra-toracica"
+        "vasija-cultura-nnnn"
     ]
 }

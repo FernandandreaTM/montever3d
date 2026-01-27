@@ -15,6 +15,7 @@
     <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r84/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r84/examples/js/loaders/MTLLoader.js"></script>
     <script src="https://cdn.rawgit.com/mrdoob/three.js/r84/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
 </head>
 <body>
     <!-- HEADER & NAVIGATION -->
@@ -82,7 +83,7 @@
                         <button class="viewer-control-btn" id="cameraRotateBtn" onclick="toggleCameraRotation()" title="Auto-rotación cámara">
                             🎬
                         </button>
-                        <button class="viewer-control-btn" id="screenshotBtn" onclick="takeScreenshot()" title="Captura de pantalla">
+                        <button class="viewer-control-btn" id="exportBtn" onclick="toggleExportMenu()" title="Exportar">
                             📷
                         </button>
                         <button class="viewer-control-btn" onclick="toggleViewerFullscreen()" title="Pantalla completa">
@@ -116,7 +117,23 @@
                             📏
                         </button>
                     </div>
-                    
+                    <!-- Export Menu -->
+                    <div class="export-menu" id="exportMenu">
+                        <div class="export-menu-header">📤 Exportar</div>
+                        <button class="export-menu-item" onclick="exportScreenshot('png')">
+                            📸 Screenshot PNG
+                        </button>
+                        <button class="export-menu-item" onclick="exportScreenshot('jpg')">
+                            🖼️ Screenshot JPG
+                        </button>
+                        <button class="export-menu-item" onclick="exportScreenshot('webp')">
+                            🎨 Screenshot WebP
+                        </button>
+                        <div class="export-menu-divider"></div>
+                        <button class="export-menu-item" id="gifRecordBtn" onclick="toggleGIFRecording()">
+                            🎞️ Grabar GIF
+                        </button>
+                    </div>                    
                     <!-- Reset -->
                     <button class="viewer-reset-btn" onclick="resetAndScroll()" title="Resetear vista">
                         🔄
@@ -373,5 +390,6 @@
     <script src="js/viewer-controls.js"></script>
     <script src="js/model-viewer.js"></script>
     <script src="js/measurement-tools.js"></script>
+    <script src="js/export-tools.js"></script>
 </body>
 </html>
