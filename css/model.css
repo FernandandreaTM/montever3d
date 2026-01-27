@@ -101,23 +101,61 @@
 /* ===== ENHANCED FLOATING CONTROLS ===== */
 .viewer-floating-controls {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 20px;
+    right: 20px;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    z-index: 100;
+    z-index: 50;
 }
 
 .control-group {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.75rem;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Grid layout (2x2) */
+.control-group-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 45px);
+    gap: 0.5rem;
+}
+
+/* Horizontal layout (max 2) */
+.control-group-horizontal {
+    flex-direction: row;
+}
+
+.color-picker-btn {
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.color-picker-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.color-picker-btn::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker-btn::-webkit-color-swatch {
+    border: none;
+    border-radius: 10px;
 }
 
 .viewer-control-btn {
@@ -1048,6 +1086,29 @@
     background: #999;
     color: white;
 }
+
+.viewer-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(47, 82, 51, 0.95);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.viewer-toast.show {
+    opacity: 1;
+}
+
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {

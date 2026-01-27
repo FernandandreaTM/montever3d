@@ -54,7 +54,7 @@ function cycleCameraView() {
         'isometric': 'Isométrica'
     };
     
-    document.getElementById('cameraViewLabel').textContent = viewLabels[view];
+    showToast(`Vista: ${viewLabels[view]}`);
 }
 
 // ===== AUTO-ROTATION =====
@@ -261,4 +261,21 @@ function toggleGrid() {
 function setSceneColor(color) {
     if (!scene) return;
     scene.background = new THREE.Color(color);
+}
+
+function toggleMeasurementPanel() {
+    const panel = document.getElementById('measurementPanel');
+    if (panel) {
+        panel.classList.toggle('active');
+    }
+}
+
+function showToast(message) {
+    const toast = document.getElementById('viewerToast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2000);
 }

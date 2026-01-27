@@ -248,7 +248,10 @@ function loadSTL(index) {
             if (isModelRotating && currentMesh) {
                 currentMesh.rotation[rotationAxis] += rotationSpeed;
             }
-            
+            // Update measurement tools
+            if (typeof updateMeasurementTools === 'function') {
+                updateMeasurementTools();
+            }            
             controls.update();
             renderer.render(scene, camera);
         }       
@@ -437,7 +440,10 @@ function loadOBJ(index) {
                 if (isModelRotating && currentMesh) {
                     currentMesh.rotation[rotationAxis] += rotationSpeed;
                 }
-                
+                // Update measurement tools
+                if (typeof updateMeasurementTools === 'function') {
+                    updateMeasurementTools();
+                }                
                 controls.update();
                 renderer.render(scene, camera);
             }

@@ -58,7 +58,7 @@ function toggleMaterialMode() {
         'wireframe': 'Wireframe',
         'normals': 'Normales'
     };
-    document.getElementById('materialModeLabel').textContent = modeLabels[materialMode];
+    showToast(`Material: ${modeLabels[materialMode]}`);
 }
 
 // ===== SAVE ORIGINAL MATERIAL CONFIGURATIONS =====
@@ -84,4 +84,16 @@ function saveOriginalMaterialConfigs(object) {
             originalMaterialConfigs.set(child.uuid, config);
         }
     });
+}
+
+function showToast(message) {
+    const toast = document.getElementById('viewerToast');
+    if (toast) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+    }
 }

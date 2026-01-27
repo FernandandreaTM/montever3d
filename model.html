@@ -70,42 +70,33 @@
             </div>
             
             <div class="viewer-hero-container">
-                <!-- Enhanced Floating Controls -->
+                <!-- Enhanced Floating Controls - Max 2 columns -->
                 <div class="viewer-floating-controls">
-                    <!-- Material Mode -->
-                    <div class="control-group">
-                        <button class="viewer-control-btn" onclick="toggleMaterialMode()" title="Cambiar modo de material">
-                            🎨
-                        </button>
-                        <span id="materialModeLabel" class="control-label">Textura</span>
-                    </div>
-                    
-                    <!-- Camera View Cycle -->
-                    <div class="control-group">
+                    <!-- Toast Notification -->
+                    <div id="viewerToast" class="viewer-toast"></div>
+                    <!-- Camera & View Group (2x2 grid) -->
+                    <div class="control-group control-group-grid">
                         <button class="viewer-control-btn" onclick="cycleCameraView()" title="Cambiar vista">
                             🎥
                         </button>
-                        <span id="cameraViewLabel" class="control-label">Frontal</span>
                         <button class="viewer-control-btn" id="cameraRotateBtn" onclick="toggleCameraRotation()" title="Auto-rotación cámara">
-                            🔄
+                            🎬
                         </button>
-                    </div>
-                    
-                    <!-- Actions -->
-                    <div class="control-group">
                         <button class="viewer-control-btn" id="screenshotBtn" onclick="takeScreenshot()" title="Captura de pantalla">
                             📷
                         </button>
                         <button class="viewer-control-btn" onclick="toggleViewerFullscreen()" title="Pantalla completa">
                             🖥️
                         </button>
-                        <button class="viewer-control-btn" onclick="toggleRepositionPanel()" title="Reposicionamiento">
-                            ⚙️
-                        </button>
                     </div>
                     
-                    <!-- Background Controls -->
-                    <div class="control-group">
+                    <!-- Material & Background Group (2x2 grid) -->
+                    <div class="control-group control-group-grid">
+                        <button class="viewer-control-btn" onclick="toggleMaterialMode()" title="Cambiar modo de material">
+                            🎨
+                        </button>
+                        <input type="color" id="bgColorPicker" value="#2F5233" onchange="setSceneColor(this.value)" 
+                            class="viewer-control-btn color-picker-btn" title="Color de fondo">
                         <button class="viewer-control-btn" id="groundBtn" onclick="toggleGround()" title="Toggle Bandeja" 
                                 style="background: rgba(245, 200, 66, 0.9);">
                             🏞️
@@ -114,10 +105,18 @@
                                 style="background: rgba(245, 200, 66, 0.9);">
                             📐
                         </button>
-                        <input type="color" id="bgColorPicker" value="#2F5233" onchange="setSceneColor(this.value)" 
-                            class="color-picker" title="Color de fondo">
                     </div>
-
+                    
+                    <!-- Advanced Tools (2 columns) -->
+                    <div class="control-group control-group-horizontal">
+                        <button class="viewer-control-btn" onclick="toggleRepositionPanel()" title="Rotación del Modelo">
+                            🌀
+                        </button>
+                        <button class="viewer-control-btn" onclick="toggleMeasurementPanel()" title="Herramientas de Medición">
+                            📏
+                        </button>
+                    </div>
+                    
                     <!-- Reset -->
                     <button class="viewer-reset-btn" onclick="resetAndScroll()" title="Resetear vista">
                         🔄
@@ -126,7 +125,7 @@
                 
                 <div class="rotation-advanced-panel" id="repositionPanel">
                     <div class="rotation-panel-header">
-                        <span>⚙️ Reposicionamiento del Modelo</span>
+                        <span>🌀 Rotación del Modelo</span>
                         <button onclick="toggleRepositionPanel()" class="panel-close-btn">×</button>
                     </div>
                     
@@ -135,7 +134,7 @@
                             <label>Girar Modelo:</label>
                             <button id="modelRotateToggle" class="rotation-mode-btn" onclick="toggleModelRotation()"
                                     style="width: 100%;">
-                                🔄 Activar Rotación
+                                🌀 Activar Rotación
                             </button>
                         </div>
                         
@@ -187,7 +186,46 @@
                         
                         <button onclick="resetRotationSettings()" class="rotation-reset-btn">🔄 Restaurar Todo</button>
                     </div>
-                </div>             
+                </div> 
+                <!-- MEASUREMENT TOOLS PANEL -->
+                <div class="rotation-advanced-panel" id="measurementPanel">
+                    <div class="rotation-panel-header">
+                        <span>📏 Herramientas de Medición</span>
+                        <button onclick="toggleMeasurementPanel()" class="panel-close-btn">×</button>
+                    </div>
+                    
+                    <div class="rotation-panel-content">
+                        <div class="rotation-option">
+                            <label>Unidades:</label>
+                            <select id="unitSelect" onchange="changeMeasurementUnit(this.value)" class="rotation-select">
+                                <option value="mm" selected>Milímetros (mm)</option>
+                                <option value="cm">Centímetros (cm)</option>
+                                <option value="m">Metros (m)</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dimension Display -->
+                        <div class="rotation-option" style="border-bottom: 2px solid var(--color-light-gray); padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
+                            <button id="dimensionsToggle" onclick="toggleDimensions()" class="rotation-mode-btn" style="width: 100%;">
+                                📦 Mostrar Dimensiones
+                            </button>
+                        </div>
+                        
+                        <!-- Distance Measurement Tool -->
+                        <div class="rotation-option">
+                            <label style="font-weight: 600;">📍 Medir entre Puntos</label>
+                            <button id="distanceMeasureToggle" onclick="toggleDistanceMeasurement()" class="rotation-mode-btn" style="width: 100%; margin-top: 0.5rem;">
+                                📍 Activar Medición
+                            </button>
+                            <button id="clearDistanceBtn" onclick="clearDistanceMeasurement()" class="rotation-axis-reset-btn" style="width: 100%; margin-top: 0.5rem; opacity: 0.5;" disabled>
+                                🗑️ Borrar Medición
+                            </button>
+                            <div id="distanceInfo" style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(212, 164, 53, 0.1); border-radius: 5px; font-size: 0.85rem; color: var(--color-secondary); text-align: center; display: none;">
+                                Click en el modelo para marcar puntos
+                            </div>
+                        </div>
+                    </div>
+                </div>       
                 <!-- Three.js canvas -->
                 <div id="modelViewer" class="model-viewer-canvas">
                     <div class="viewer-loading">
@@ -334,5 +372,6 @@
     <script src="js/loader-utils.js"></script>
     <script src="js/viewer-controls.js"></script>
     <script src="js/model-viewer.js"></script>
+    <script src="js/measurement-tools.js"></script>
 </body>
 </html>
