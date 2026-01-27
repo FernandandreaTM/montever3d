@@ -130,7 +130,7 @@ function loadSTL(index) {
     if (selector) container.appendChild(selector);
     
     scene = new THREE.Scene();
-    scene.background = null;
+    scene.background = new THREE.Color(0x2F5233);
     
     camera = new THREE.PerspectiveCamera(50, container.offsetWidth / 600, 0.1, 1000);
     camera.position.set(0, 30, 80);
@@ -177,16 +177,20 @@ function loadSTL(index) {
         transparent: true, 
         opacity: 0.3 
     });
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -40;
-    ground.receiveShadow = true;
-    scene.add(ground);
+    groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+    groundMesh.rotation.x = -Math.PI / 2;
+    groundMesh.position.y = -40;
+    groundMesh.receiveShadow = true;
+    scene.add(groundMesh);
+
+    gridMesh = new THREE.GridHelper(200, 20, 0x999999, 0xdddddd);
+    gridMesh.position.y = -39.9;
+    scene.add(gridMesh);
     
-    const gridHelper = new THREE.GridHelper(200, 20, 0x999999, 0xdddddd);
-    gridHelper.position.y = -39.9;
-    scene.add(gridHelper);
-    
+    document.getElementById('cameraRotateBtn').style.background = 'rgba(245, 200, 66, 0.9)';
+    document.getElementById('groundBtn').style.background = 'rgba(245, 200, 66, 0.9)';
+    document.getElementById('gridBtn').style.background = 'rgba(245, 200, 66, 0.9)';
+
     const loader = new THREE.STLLoader();
     loader.load(stlPath, function(geometry) {
         const material = new THREE.MeshPhongMaterial({ 
@@ -230,9 +234,24 @@ function loadSTL(index) {
         
         function animate() {
             requestAnimationFrame(animate);
+            
+            if (isCameraRotating) {
+                const radius = camera.position.length();
+                const angle = 0.005;
+                const x = camera.position.x;
+                const z = camera.position.z;
+                camera.position.x = x * Math.cos(angle) - z * Math.sin(angle);
+                camera.position.z = x * Math.sin(angle) + z * Math.cos(angle);
+                camera.lookAt(controls.target);
+            }
+            
+            if (isModelRotating && currentMesh) {
+                currentMesh.rotation[rotationAxis] += rotationSpeed;
+            }
+            
             controls.update();
             renderer.render(scene, camera);
-        }
+        }       
         animate();
         
         console.log('✅ STL loaded successfully');
@@ -271,7 +290,7 @@ function loadOBJ(index) {
     if (selector) container.appendChild(selector);
     
     scene = new THREE.Scene();
-    scene.background = null;
+    scene.background = new THREE.Color(0x2F5233);
     
     camera = new THREE.PerspectiveCamera(50, container.offsetWidth / 600, 0.1, 1000);
     camera.position.set(0, 30, 80);
@@ -314,15 +333,19 @@ function loadOBJ(index) {
         transparent: true, 
         opacity: 0.3 
     });
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -40;
-    ground.receiveShadow = true;
-    scene.add(ground);
-    
-    const gridHelper = new THREE.GridHelper(200, 20, 0x999999, 0xdddddd);
-    gridHelper.position.y = -39.9;
-    scene.add(gridHelper);
+    groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+    groundMesh.rotation.x = -Math.PI / 2;
+    groundMesh.position.y = -40;
+    groundMesh.receiveShadow = true;
+    scene.add(groundMesh);
+
+    gridMesh = new THREE.GridHelper(200, 20, 0x999999, 0xdddddd);
+    gridMesh.position.y = -39.9;
+    scene.add(gridMesh);
+
+    document.getElementById('cameraRotateBtn').style.background = 'rgba(245, 200, 66, 0.9)';
+    document.getElementById('groundBtn').style.background = 'rgba(245, 200, 66, 0.9)';
+    document.getElementById('gridBtn').style.background = 'rgba(245, 200, 66, 0.9)';
     
     const mtlPath = objPath.replace('.obj', '.mtl');
     const mtlFileName = mtlPath.substring(mtlPath.lastIndexOf('/') + 1);
@@ -400,6 +423,21 @@ function loadOBJ(index) {
             
             function animate() {
                 requestAnimationFrame(animate);
+                
+                if (isCameraRotating) {
+                    const radius = camera.position.length();
+                    const angle = 0.005;
+                    const x = camera.position.x;
+                    const z = camera.position.z;
+                    camera.position.x = x * Math.cos(angle) - z * Math.sin(angle);
+                    camera.position.z = x * Math.sin(angle) + z * Math.cos(angle);
+                    camera.lookAt(controls.target);
+                }
+                
+                if (isModelRotating && currentMesh) {
+                    currentMesh.rotation[rotationAxis] += rotationSpeed;
+                }
+                
                 controls.update();
                 renderer.render(scene, camera);
             }

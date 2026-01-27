@@ -37,20 +37,100 @@ function setCameraView(view) {
     console.log('📸 Camera view set to:', view);
 }
 
+const cameraViews = ['front', 'top', 'isometric', 'back', 'left', 'right'];
+let currentViewIndex = 0;
+
+function cycleCameraView() {
+    currentViewIndex = (currentViewIndex + 1) % cameraViews.length;
+    const view = cameraViews[currentViewIndex];
+    setCameraView(view);
+    
+    const viewLabels = {
+        'front': 'Frontal',
+        'back': 'Trasera',
+        'left': 'Izquierda',
+        'right': 'Derecha',
+        'top': 'Superior',
+        'isometric': 'Isométrica'
+    };
+    
+    document.getElementById('cameraViewLabel').textContent = viewLabels[view];
+}
+
 // ===== AUTO-ROTATION =====
-function toggleAutoRotate() {
-    if (!currentMesh) return;
+let rotationSpeed = 0.01;
+let rotationAxis = 'y';
+let rotationMode = 'camera';
+let isCameraRotating = true;
+let isModelRotating = false;
+
+function toggleCameraRotation() {
+    isCameraRotating = !isCameraRotating;
     
-    isAutoRotating = !isAutoRotating;
-    
-    const btn = document.getElementById('autoRotateBtn');
+    const btn = document.getElementById('cameraRotateBtn');
     if (btn) {
-        btn.style.background = isAutoRotating 
+        btn.style.background = isCameraRotating 
             ? 'rgba(245, 200, 66, 0.9)' 
             : 'rgba(255, 255, 255, 0.85)';
     }
+}
+
+function toggleModelRotation() {
+    isModelRotating = !isModelRotating;
     
-    console.log('🔄 Auto-rotation:', isAutoRotating ? 'ON' : 'OFF');
+    const btn = document.getElementById('modelRotateToggle');
+    if (btn) {
+        btn.style.background = isModelRotating 
+            ? 'rgba(245, 200, 66, 0.9)' 
+            : 'rgba(255, 255, 255, 0.85)';
+    }
+}
+
+function toggleRepositionPanel() {
+    const panel = document.getElementById('repositionPanel');
+    if (panel) {
+        panel.classList.toggle('active');
+    }
+}
+
+function updateRotationSpeed(value) {
+    rotationSpeed = parseFloat(value);
+    document.getElementById('speedValue').textContent = value;
+}
+
+function setRotationAxis(axis) {
+    rotationAxis = axis;
+}
+
+function resetRotationSettings() {
+    rotationSpeed = 0.01;
+    rotationAxis = 'y';
+    isModelRotating = false;
+    
+    document.getElementById('speedSlider').value = 0.01;
+    document.getElementById('speedValue').textContent = '0.01';
+    document.getElementById('axisSelect').value = 'y';
+    document.getElementById('modelRotateToggle').style.background = 'rgba(255, 255, 255, 0.85)';
+}
+
+function setManualRotation(axis, value) {
+    if (!currentMesh) return;
+    const radians = (parseFloat(value) * Math.PI) / 180;
+    currentMesh.rotation[axis] = radians;
+}
+
+function updateRotationInput(axis, value) {
+    document.getElementById(`rotation-${axis}-value`).value = value;
+    setManualRotation(axis, value);
+}
+
+function resetManualRotation() {
+    if (!currentMesh) return;
+    currentMesh.rotation.set(0, 0, 0);
+    ['x', 'y', 'z'].forEach(axis => {
+        document.getElementById(`rotation-${axis}-slider`).value = 0;
+        document.getElementById(`rotation-${axis}-value`).value = 0;
+    });
 }
 
 // ===== SCREENSHOT =====
@@ -98,11 +178,9 @@ document.addEventListener('fullscreenchange', () => {
     if (renderer && camera) {
         const container = document.getElementById('modelViewer');
         if (document.fullscreenElement) {
-            // Entrando a fullscreen
             camera.aspect = window.innerWidth / window.innerHeight;
             renderer.setSize(window.innerWidth, window.innerHeight);
         } else {
-            // Saliendo de fullscreen
             camera.aspect = container.offsetWidth / 600;
             renderer.setSize(container.offsetWidth, 600);
         }
@@ -140,69 +218,47 @@ function closeRotationHint() {
     }
 }
 
-function setBackground(type) {
+function toggleGround() {
     if (!scene) return;
-    
-    currentBackground = type;
     
     if (groundMesh) {
         scene.remove(groundMesh);
         groundMesh = null;
+        document.getElementById('groundBtn').style.background = 'rgba(255, 255, 255, 0.85)';
+    } else {
+        const groundGeometry = new THREE.PlaneGeometry(400, 400);
+        const groundMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0xcccccc, 
+            side: THREE.DoubleSide, 
+            shininess: 0, 
+            transparent: true, 
+            opacity: 0.3 
+        });
+        groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+        groundMesh.rotation.x = -Math.PI / 2;
+        groundMesh.position.y = -40;
+        groundMesh.receiveShadow = true;
+        scene.add(groundMesh);
+        document.getElementById('groundBtn').style.background = 'rgba(245, 200, 66, 0.9)';
     }
+}
+
+function toggleGrid() {
+    if (!scene) return;
+    
     if (gridMesh) {
         scene.remove(gridMesh);
         gridMesh = null;
+        document.getElementById('gridBtn').style.background = 'rgba(255, 255, 255, 0.85)';
+    } else {
+        gridMesh = new THREE.GridHelper(200, 20, 0x999999, 0xdddddd);
+        gridMesh.position.y = -39.9;
+        scene.add(gridMesh);
+        document.getElementById('gridBtn').style.background = 'rgba(245, 200, 66, 0.9)';
     }
-    
-    switch(type) {
-        case 'default':
-            scene.background = null;
-            const groundGeometry = new THREE.PlaneGeometry(400, 400);
-            const groundMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0xcccccc, 
-                side: THREE.DoubleSide, 
-                shininess: 0, 
-                transparent: true, 
-                opacity: 0.3 
-            });
-            groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
-            groundMesh.rotation.x = -Math.PI / 2;
-            groundMesh.position.y = -40;
-            groundMesh.receiveShadow = true;
-            scene.add(groundMesh);
-            
-            gridMesh = new THREE.GridHelper(200, 20, 0x999999, 0xdddddd);
-            gridMesh.position.y = -39.9;
-            scene.add(gridMesh);
-            break;
-            
-        case 'transparent':
-            scene.background = null;
-            break;
-            
-        case 'white':
-            scene.background = new THREE.Color(0xffffff);
-            break;
-            
-        case 'black':
-            scene.background = new THREE.Color(0x000000);
-            break;
-            
-        case 'gradient-green':
-            scene.background = new THREE.Color(0x2F5233);
-            break;
-            
-        case 'gradient-blue':
-            scene.background = new THREE.Color(0x1a3a52);
-            break;
-            
-        case 'grid-only':
-            scene.background = null;
-            gridMesh = new THREE.GridHelper(200, 20, 0x999999, 0xdddddd);
-            gridMesh.position.y = -39.9;
-            scene.add(gridMesh);
-            break;
-    }
-    
-    console.log('Background changed to:', type);
+}
+
+function setSceneColor(color) {
+    if (!scene) return;
+    scene.background = new THREE.Color(color);
 }

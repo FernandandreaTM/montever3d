@@ -80,43 +80,42 @@
                         <span id="materialModeLabel" class="control-label">Textura</span>
                     </div>
                     
-                    <!-- Camera Presets -->
+                    <!-- Camera View Cycle -->
                     <div class="control-group">
-                        <button class="viewer-control-btn" onclick="setCameraView('front')" title="Vista Frontal">
-                            ⬆️
+                        <button class="viewer-control-btn" onclick="cycleCameraView()" title="Cambiar vista">
+                            🎥
                         </button>
-                        <button class="viewer-control-btn" onclick="setCameraView('top')" title="Vista Superior">
-                            🔝
-                        </button>
-                        <button class="viewer-control-btn" onclick="setCameraView('isometric')" title="Vista Isométrica">
-                            📐
+                        <span id="cameraViewLabel" class="control-label">Frontal</span>
+                        <button class="viewer-control-btn" id="cameraRotateBtn" onclick="toggleCameraRotation()" title="Auto-rotación cámara">
+                            🔄
                         </button>
                     </div>
                     
                     <!-- Actions -->
                     <div class="control-group">
-                        <button class="viewer-control-btn" id="autoRotateBtn" onclick="toggleAutoRotate()" title="Auto-rotación">
-                            🔄
-                        </button>
                         <button class="viewer-control-btn" id="screenshotBtn" onclick="takeScreenshot()" title="Captura de pantalla">
                             📷
                         </button>
                         <button class="viewer-control-btn" onclick="toggleViewerFullscreen()" title="Pantalla completa">
                             🖥️
                         </button>
+                        <button class="viewer-control-btn" onclick="toggleRepositionPanel()" title="Reposicionamiento">
+                            ⚙️
+                        </button>
                     </div>
                     
-                    <!-- Background Selector -->
+                    <!-- Background Controls -->
                     <div class="control-group">
-                        <select class="viewer-control-select" onchange="setBackground(this.value)" title="Fondo de escena">
-                            <option value="default">🏞️ Predeterminado</option>
-                            <option value="transparent">⬜ Transparente</option>
-                            <option value="white">⚪ Blanco</option>
-                            <option value="black">⚫ Negro</option>
-                            <option value="gradient-green">🌲 Verde</option>
-                            <option value="gradient-blue">🌊 Azul</option>
-                            <option value="grid-only">📐 Solo Grid</option>
-                        </select>
+                        <button class="viewer-control-btn" id="groundBtn" onclick="toggleGround()" title="Toggle Bandeja" 
+                                style="background: rgba(245, 200, 66, 0.9);">
+                            🏞️
+                        </button>
+                        <button class="viewer-control-btn" id="gridBtn" onclick="toggleGrid()" title="Toggle Grid"
+                                style="background: rgba(245, 200, 66, 0.9);">
+                            📐
+                        </button>
+                        <input type="color" id="bgColorPicker" value="#2F5233" onchange="setSceneColor(this.value)" 
+                            class="color-picker" title="Color de fondo">
                     </div>
 
                     <!-- Reset -->
@@ -125,6 +124,70 @@
                     </button>
                 </div>
                 
+                <div class="rotation-advanced-panel" id="repositionPanel">
+                    <div class="rotation-panel-header">
+                        <span>⚙️ Reposicionamiento del Modelo</span>
+                        <button onclick="toggleRepositionPanel()" class="panel-close-btn">×</button>
+                    </div>
+                    
+                    <div class="rotation-panel-content">
+                        <div class="rotation-option">
+                            <label>Girar Modelo:</label>
+                            <button id="modelRotateToggle" class="rotation-mode-btn" onclick="toggleModelRotation()"
+                                    style="width: 100%;">
+                                🔄 Activar Rotación
+                            </button>
+                        </div>
+                        
+                        <div class="rotation-option" style="opacity: 0.5;">
+                            <label>Velocidad: <span id="speedValue">0.01</span></label>
+                            <input type="range" id="speedSlider" min="0.005" max="0.05" step="0.005" value="0.01" 
+                                oninput="updateRotationSpeed(this.value)" class="rotation-slider">
+                        </div>
+                        
+                        <div class="rotation-option" style="opacity: 0.5;">
+                            <label>Eje:</label>
+                            <select id="axisSelect" onchange="setRotationAxis(this.value)" class="rotation-select">
+                                <option value="x">X (Horizontal)</option>
+                                <option value="y" selected>Y (Vertical)</option>
+                                <option value="z">Z (Profundidad)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="rotation-option">
+                            <label>🎯 Rotación Manual:</label>
+                            <div class="manual-rotation-controls">
+                                <div class="rotation-axis-control">
+                                    <span class="axis-label">X:</span>
+                                    <input type="range" id="rotation-x-slider" min="0" max="360" value="0" 
+                                        oninput="updateRotationInput('x', this.value)" class="rotation-slider-small">
+                                    <input type="number" id="rotation-x-value" min="0" max="360" value="0" 
+                                        oninput="setManualRotation('x', this.value); document.getElementById('rotation-x-slider').value = this.value"
+                                        class="rotation-number-input">
+                                </div>
+                                <div class="rotation-axis-control">
+                                    <span class="axis-label">Y:</span>
+                                    <input type="range" id="rotation-y-slider" min="0" max="360" value="0" 
+                                        oninput="updateRotationInput('y', this.value)" class="rotation-slider-small">
+                                    <input type="number" id="rotation-y-value" min="0" max="360" value="0" 
+                                        oninput="setManualRotation('y', this.value); document.getElementById('rotation-y-slider').value = this.value"
+                                        class="rotation-number-input">
+                                </div>
+                                <div class="rotation-axis-control">
+                                    <span class="axis-label">Z:</span>
+                                    <input type="range" id="rotation-z-slider" min="0" max="360" value="0" 
+                                        oninput="updateRotationInput('z', this.value)" class="rotation-slider-small">
+                                    <input type="number" id="rotation-z-value" min="0" max="360" value="0" 
+                                        oninput="setManualRotation('z', this.value); document.getElementById('rotation-z-slider').value = this.value"
+                                        class="rotation-number-input">
+                                </div>
+                                <button onclick="resetManualRotation()" class="rotation-axis-reset-btn">↺ Reset Rotación</button>
+                            </div>
+                        </div>
+                        
+                        <button onclick="resetRotationSettings()" class="rotation-reset-btn">🔄 Restaurar Todo</button>
+                    </div>
+                </div>             
                 <!-- Three.js canvas -->
                 <div id="modelViewer" class="model-viewer-canvas">
                     <div class="viewer-loading">
