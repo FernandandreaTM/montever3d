@@ -1176,6 +1176,23 @@
     margin: 0.5rem 0;
 }
 
+/* ===== FULLSCREEN AUTO-HIDE CONTROLS ===== */
+.viewer-floating-controls.auto-hide {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.viewer-floating-controls.auto-hide.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Cursor también se oculta en fullscreen inactivo */
+.fullscreen-active.hide-cursor {
+    cursor: none;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .model-grid {

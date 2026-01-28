@@ -75,6 +75,15 @@
                 <div class="viewer-floating-controls">
                     <!-- Toast Notification -->
                     <div id="viewerToast" class="viewer-toast"></div>
+                    <!-- Actions Group (2 columns) -->
+                    <div class="control-group control-group-horizontal">
+                        <button class="viewer-control-btn" id="toggleControlsBtn" onclick="toggleControlsVisibility()" title="Mostrar/Ocultar controles">
+                            👁️
+                        </button>
+                        <button class="viewer-reset-btn" onclick="resetAndScroll()" title="Resetear vista">
+                            🔄
+                        </button>
+                    </div>
                     <!-- Camera & View Group (2x2 grid) -->
                     <div class="control-group control-group-grid">
                         <button class="viewer-control-btn" onclick="cycleCameraView()" title="Cambiar vista">
@@ -138,10 +147,6 @@
                             ⚙️ Configuración
                         </button>                      
                     </div>                    
-                    <!-- Reset -->
-                    <button class="viewer-reset-btn" onclick="resetAndScroll()" title="Resetear vista">
-                        🔄
-                    </button>
                 </div>
                 
                 <div class="rotation-advanced-panel" id="repositionPanel">
