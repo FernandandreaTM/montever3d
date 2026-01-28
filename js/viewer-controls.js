@@ -391,3 +391,9 @@ function toggleControlsVisibility() {
         clearTimeout(fullscreenAutoHideTimeout);
     }
 }
+function toggleNotesPanel() {
+    const panel = document.getElementById('notesPanel');
+    if (panel) {
+        panel.classList.toggle('active');
+    }
+}
