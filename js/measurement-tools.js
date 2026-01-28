@@ -4,7 +4,7 @@
 let measurementUnit = 'mm'; // Default: millimeters
 let dimensionsVisible = false;
 let dimensionBoxGroup = null; // Three.js Group for bounding box visualization
-let dimensionLabels = []; // Array of HTML label elements
+let dimensionLabels = []; // Array of sprite label elements
 
 // Unit conversion factors (assuming 1 Three.js unit = 1mm)
 const unitConversions = {
@@ -19,15 +19,83 @@ const unitSymbols = {
     'm': 'm'
 };
 
+// ===== CREATE TEXT SPRITE FOR 3D LABELS =====
+function createTextSprite(text, backgroundColor) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    
+    // Double resolution for sharper text
+    canvas.width = 512;
+    canvas.height = 128;
+    
+    context.fillStyle = backgroundColor;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    
+    context.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+    context.lineWidth = 6;
+    context.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
+    
+    context.font = 'Bold 56px Arial';
+    context.fillStyle = 'white';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    
+    const texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    
+    const material = new THREE.SpriteMaterial({ 
+        map: texture,
+        depthTest: false,  // Always render on top
+        depthWrite: false
+    });
+    const sprite = new THREE.Sprite(material);
+    sprite.scale.set(20, 5, 1);
+    sprite.renderOrder = 999; // Render last (on top)
+    
+    return sprite;
+}
+
 // ===== CHANGE MEASUREMENT UNIT =====
 function changeMeasurementUnit(unit) {
     measurementUnit = unit;
-    console.log('📐 Unit changed to:', unit);
+    console.log('📏 Unit changed to:', unit);
     
     // If dimensions are visible, update labels
     if (dimensionsVisible && currentMesh) {
         updateDimensionLabels();
     }
+    
+    // Update distance measurement labels
+    measurements.forEach(m => {
+        if (m.label && m.points.length === 2) {
+            const distance = m.points[0].distanceTo(m.points[1]);
+            const text = formatDimension(distance);
+            updateSpriteText(m.label, text, 'rgba(212, 164, 53, 0.95)');
+        }
+    });
+}
+
+// ===== UPDATE SPRITE TEXT =====
+function updateSpriteText(sprite, text, backgroundColor) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 512;
+    canvas.height = 128;
+    
+    context.fillStyle = backgroundColor;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+    context.lineWidth = 6;
+    context.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
+    context.font = 'Bold 56px Arial';
+    context.fillStyle = 'white';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    
+    sprite.material.map.image = canvas;
+    sprite.material.map.needsUpdate = true;
 }
 
 // ===== TOGGLE DIMENSIONS =====
@@ -71,8 +139,8 @@ function createDimensionVisualization() {
     
     scene.add(dimensionBoxGroup);
     
-    // Create HTML labels for dimensions
-    createDimensionLabels(size, center);
+    // Create sprite labels for dimensions
+    createDimensionLabels(size, center, box);
     
     console.log('✅ Dimensions displayed:', {
         X: formatDimension(size.x),
@@ -83,7 +151,6 @@ function createDimensionVisualization() {
 
 // ===== CREATE BOUNDING BOX EDGES =====
 function createBoundingBoxEdges(box) {
-    // Use Geometry with vertices for Three.js r84
     const geometry = new THREE.Geometry();
     
     // Bottom face
@@ -120,87 +187,46 @@ function createBoundingBoxEdges(box) {
     return new THREE.Line(geometry, material);
 }
 
-// ===== CREATE DIMENSION LABELS (HTML OVERLAY) =====
-function createDimensionLabels(size, center) {
-    const container = document.getElementById('modelViewer');
-    
-    // Clear existing labels
-    dimensionLabels.forEach(label => label.remove());
+// ===== CREATE DIMENSION LABELS =====
+function createDimensionLabels(size, center, box) {
+    dimensionLabels.forEach(label => {
+        if (label.parent) {
+            label.parent.remove(label);
+        }
+    });
     dimensionLabels = [];
     
-    // Create labels for X, Y, Z
     const dimensions = [
-        { axis: 'X', value: size.x, color: '#E63946' },
-        { axis: 'Y', value: size.y, color: '#06D6A0' },
-        { axis: 'Z', value: size.z, color: '#118AB2' }
+        { 
+            axis: 'X', 
+            value: size.x, 
+            color: '#E63946',
+            position: new THREE.Vector3(box.max.x + 15, center.y, center.z)
+        },
+        { 
+            axis: 'Y', 
+            value: size.y, 
+            color: '#06D6A0',
+            position: new THREE.Vector3(center.x, box.max.y + 15, center.z)
+        },
+        { 
+            axis: 'Z', 
+            value: size.z, 
+            color: '#118AB2',
+            position: new THREE.Vector3(center.x, center.y, box.max.z + 15)
+        }
     ];
     
     dimensions.forEach(dim => {
-        const label = document.createElement('div');
-        label.className = 'dimension-label';
-        label.style.cssText = `
-            position: absolute;
-            background: ${dim.color};
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 5px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            pointer-events: none;
-            z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            white-space: nowrap;
-        `;
-        label.textContent = `${dim.axis}: ${formatDimension(dim.value)}`;
-        
-        container.appendChild(label);
-        dimensionLabels.push(label);
-    });
-    
-    // Update label positions
-    updateDimensionLabelPositions();
-}
-
-// ===== UPDATE DIMENSION LABEL POSITIONS =====
-function updateDimensionLabelPositions() {
-    if (!dimensionsVisible || dimensionLabels.length === 0) return;
-    
-    const box = new THREE.Box3().setFromObject(currentMesh);
-    const container = document.getElementById('modelViewer');
-    const rect = container.getBoundingClientRect();
-    
-    // Define 3D positions for labels
-    const labelPositions = [
-        new THREE.Vector3(box.max.x + 10, box.min.y, (box.min.z + box.max.z) / 2), // X axis
-        new THREE.Vector3(box.min.x, box.max.y + 10, (box.min.z + box.max.z) / 2), // Y axis
-        new THREE.Vector3((box.min.x + box.max.x) / 2, box.min.y, box.max.z + 10)  // Z axis
-    ];
-    
-    labelPositions.forEach((pos, index) => {
-        const screenPos = toScreenPosition(pos, camera, container);
-        
-        if (dimensionLabels[index]) {
-            dimensionLabels[index].style.left = `${screenPos.x}px`;
-            dimensionLabels[index].style.top = `${screenPos.y}px`;
-        }
+        const text = `${dim.axis}: ${formatDimension(dim.value)}`;
+        const sprite = createTextSprite(text, dim.color);
+        sprite.position.copy(dim.position);
+        dimensionBoxGroup.add(sprite);
+        dimensionLabels.push(sprite);
     });
 }
 
-// ===== CONVERT 3D POSITION TO SCREEN POSITION =====
-function toScreenPosition(position, camera, container) {
-    const vector = position.clone();
-    vector.project(camera);
-    
-    const widthHalf = container.offsetWidth / 2;
-    const heightHalf = 600 / 2; // Canvas height
-    
-    return {
-        x: (vector.x * widthHalf) + widthHalf,
-        y: -(vector.y * heightHalf) + heightHalf
-    };
-}
-
-// ===== UPDATE DIMENSION LABELS (WHEN UNIT CHANGES) =====
+// ===== UPDATE DIMENSION LABELS (when unit changes) =====
 function updateDimensionLabels() {
     if (!currentMesh || dimensionLabels.length === 0) return;
     
@@ -208,15 +234,15 @@ function updateDimensionLabels() {
     const size = box.getSize(new THREE.Vector3());
     
     const dimensions = [
-        { axis: 'X', value: size.x },
-        { axis: 'Y', value: size.y },
-        { axis: 'Z', value: size.z }
+        { axis: 'X', value: size.x, color: '#E63946' },
+        { axis: 'Y', value: size.y, color: '#06D6A0' },
+        { axis: 'Z', value: size.z, color: '#118AB2' }
     ];
     
-    dimensions.forEach((dim, index) => {
-        if (dimensionLabels[index]) {
-            dimensionLabels[index].textContent = `${dim.axis}: ${formatDimension(dim.value)}`;
-        }
+    dimensionLabels.forEach((sprite, index) => {
+        const dim = dimensions[index];
+        const text = `${dim.axis}: ${formatDimension(dim.value)}`;
+        updateSpriteText(sprite, text, dim.color);
     });
 }
 
@@ -233,16 +259,7 @@ function removeDimensionVisualization() {
         dimensionBoxGroup = null;
     }
     
-    dimensionLabels.forEach(label => label.remove());
     dimensionLabels = [];
-}
-
-// ===== UPDATE LABELS ON CAMERA MOVE =====
-// Hook into animation loop (called from loader-utils.js animate function)
-function updateMeasurementTools() {
-    if (dimensionsVisible) {
-        updateDimensionLabelPositions();
-    }
 }
 
 console.log('✅ Measurement Tools loaded');
@@ -270,7 +287,7 @@ function toggleDistanceMeasurement() {
     const info = document.getElementById('distanceInfo');
     
     if (distanceMeasurementActive) {
-        btn.textContent = '📍 Desactivar Medición';
+        btn.textContent = '📏 Desactivar Medición';
         btn.style.background = 'rgba(245, 200, 66, 0.9)';
         info.style.display = 'block';
         info.textContent = 'Click para marcar Punto A';
@@ -281,7 +298,7 @@ function toggleDistanceMeasurement() {
         
         console.log('📍 Distance measurement activated');
     } else {
-        btn.textContent = '📍 Activar Medición';
+        btn.textContent = '📏 Activar Medición';
         btn.style.background = 'rgba(255, 255, 255, 0.85)';
         info.style.display = 'none';
         
@@ -342,10 +359,17 @@ function completeMeasurement(point) {
     currentMeasurement.markers.push(marker);
     
     createMeasurementLine(currentMeasurement);
+    
+    // Add custom name property
+    currentMeasurement.customName = '';
+    currentMeasurement.id = Date.now();
+    
     createMeasurementLabel(currentMeasurement);
     
     measurements.push(currentMeasurement);
     currentMeasurement = null;
+    
+    updateMeasurementList();
     
     document.getElementById('distanceInfo').textContent = `${measurements.length} medición(es) activa(s) - Click para nueva medición`;
     document.getElementById('clearDistanceBtn').disabled = false;
@@ -378,55 +402,26 @@ function createMeasurementLine(measurement) {
 }
 
 function createMeasurementLabel(measurement) {
-    const container = document.getElementById('modelViewer');
     const distance = measurement.points[0].distanceTo(measurement.points[1]);
-    
-    const label = document.createElement('div');
-    label.className = 'distance-label';
-    label.style.cssText = `
-        position: absolute;
-        background: rgba(212, 164, 53, 0.7);
-        color: white;
-        padding: 0.4rem 0.6rem;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        pointer-events: none;
-        z-index: 100;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-        white-space: nowrap;
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        backdrop-filter: blur(4px);
-    `;
-    label.textContent = formatDimension(distance);
-    
-    container.appendChild(label);
-    measurement.label = label;
-    
-    updateMeasurementLabelPosition(measurement);
-}
-
-function updateMeasurementLabelPosition(measurement) {
-    if (!measurement.label || measurement.points.length !== 2) return;
-    
+    const text = formatDimension(distance);
     const midpoint = new THREE.Vector3().addVectors(
         measurement.points[0],
         measurement.points[1]
     ).multiplyScalar(0.5);
     
-    const container = document.getElementById('modelViewer');
-    const screenPos = toScreenPosition(midpoint, camera, container);
+    // Use sprite instead of HTML
+    const sprite = createTextSprite(text, 'rgba(212, 164, 53, 0.95)');
+    sprite.position.copy(midpoint);
+    scene.add(sprite);
     
-    measurement.label.style.left = `${screenPos.x}px`;
-    measurement.label.style.top = `${screenPos.y}px`;
-    measurement.label.style.transform = 'translate(-50%, -50%)';
+    measurement.label = sprite;
 }
 
 function clearDistanceMeasurement() {
     measurements.forEach(m => {
         m.markers.forEach(marker => scene.remove(marker));
         if (m.line) scene.remove(m.line);
-        if (m.label) m.label.remove();
+        if (m.label) scene.remove(m.label);
     });
     
     if (currentMeasurement) {
@@ -435,6 +430,8 @@ function clearDistanceMeasurement() {
     }
     
     measurements = [];
+    
+    updateMeasurementList(); // ADD THIS LINE
     
     document.getElementById('clearDistanceBtn').disabled = true;
     document.getElementById('clearDistanceBtn').style.opacity = '0.5';
@@ -446,16 +443,93 @@ function clearDistanceMeasurement() {
     console.log('🗑️ Todas las mediciones borradas');
 }
 
+// ===== UPDATE MEASUREMENT TOOLS (called from animate loop) =====
 function updateMeasurementTools() {
-    if (dimensionsVisible) {
-        updateDimensionLabelPositions();
+    // All labels are now 3D sprites - no HTML position updates needed
+    // This function remains as placeholder for future features
+}
+
+// ===== UPDATE MEASUREMENT LIST =====
+function updateMeasurementList() {
+    const container = document.getElementById('measurementList');
+    const listContainer = document.getElementById('measurementListContainer');
+    
+    if (measurements.length === 0) {
+        listContainer.style.display = 'none';
+        return;
     }
     
-    measurements.forEach(m => {
-        if (m.label && m.points.length === 2) {
-            updateMeasurementLabelPosition(m);
-        }
-    });
+    listContainer.style.display = 'block';
+    
+    container.innerHTML = measurements.map((m, index) => {
+        const distance = m.points[0].distanceTo(m.points[1]);
+        const defaultName = `Medición ${index + 1}`;
+        const displayName = m.customName || defaultName;
+        
+        return `
+            <div style="display: flex; gap: 0.5rem; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.5); border-radius: 6px;">
+                <input 
+                    type="text" 
+                    value="${displayName}"
+                    placeholder="${defaultName}"
+                    onchange="updateMeasurementName(${m.id}, this.value)"
+                    style="flex: 1; padding: 0.4rem; border: 1px solid var(--color-light-gray); border-radius: 4px; font-size: 0.85rem; font-weight: 600;"
+                >
+                <span style="min-width: 70px; font-weight: 700; color: var(--color-secondary); font-size: 0.9rem;">${formatDimension(distance)}</span>
+                <button 
+                    onclick="deleteMeasurement(${m.id})"
+                    style="background: #E63946; color: white; border: none; padding: 0.4rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600;"
+                    title="Eliminar"
+                >🗑️</button>
+            </div>
+        `;
+    }).join('');
+}
+
+// ===== UPDATE MEASUREMENT NAME =====
+function updateMeasurementName(id, newName) {
+    const measurement = measurements.find(m => m.id === id);
+    if (!measurement) return;
+    
+    measurement.customName = newName.trim();
+    
+    // Update sprite label
+    const distance = measurement.points[0].distanceTo(measurement.points[1]);
+    const text = measurement.customName ? `${measurement.customName}: ${formatDimension(distance)}` : formatDimension(distance);
+    updateSpriteText(measurement.label, text, 'rgba(212, 164, 53, 0.95)');
+    
+    console.log(`📝 Medición renombrada: ${measurement.customName || 'sin nombre'}`);
+}
+
+// ===== DELETE SINGLE MEASUREMENT =====
+function deleteMeasurement(id) {
+    const index = measurements.findIndex(m => m.id === id);
+    if (index === -1) return;
+    
+    const m = measurements[index];
+    
+    // Remove from scene
+    m.markers.forEach(marker => scene.remove(marker));
+    if (m.line) scene.remove(m.line);
+    if (m.label) scene.remove(m.label);
+    
+    // Remove from array
+    measurements.splice(index, 1);
+    
+    // Update list
+    updateMeasurementList();
+    
+    // Update UI
+    if (measurements.length === 0) {
+        document.getElementById('clearDistanceBtn').disabled = true;
+        document.getElementById('clearDistanceBtn').style.opacity = '0.5';
+    }
+    
+    document.getElementById('distanceInfo').textContent = measurements.length > 0 
+        ? `${measurements.length} medición(es) activa(s) - Click para nueva medición`
+        : 'Click para marcar Punto A';
+    
+    console.log('🗑️ Medición eliminada');
 }
 
 console.log('✅ Measurement Tools loaded');

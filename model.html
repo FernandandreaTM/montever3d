@@ -119,20 +119,24 @@
                     </div>
                     <!-- Export Menu -->
                     <div class="export-menu" id="exportMenu">
-                        <div class="export-menu-header">📤 Exportar</div>
-                        <button class="export-menu-item" onclick="exportScreenshot('png')">
-                            📸 Screenshot PNG
-                        </button>
-                        <button class="export-menu-item" onclick="exportScreenshot('jpg')">
-                            🖼️ Screenshot JPG
-                        </button>
-                        <button class="export-menu-item" onclick="exportScreenshot('webp')">
-                            🎨 Screenshot WebP
+                        <div class="export-menu-header">
+                            📤 Exportar
+                            <button onclick="toggleExportMenu()" style="background: none; border: none; color: #999; font-size: 1.2rem; cursor: pointer; padding: 0; margin-left: auto; line-height: 1;" onmouseover="this.style.color='#E63946'" onmouseout="this.style.color='#999'">✕</button>
+                        </div>
+                        <button class="export-menu-item" onclick="exportScreenshotDefault()">
+                            📸 Screenshot
                         </button>
                         <div class="export-menu-divider"></div>
                         <button class="export-menu-item" id="gifRecordBtn" onclick="toggleGIFRecording()">
                             🎞️ Grabar GIF
                         </button>
+                        <button class="export-menu-item" id="videoRecordBtn" onclick="toggleVideoRecordingDefault()">
+                            🎥 Grabar Video
+                        </button>
+                        <div class="export-menu-divider"></div>
+                        <button class="export-menu-item" onclick="openExportSettings()">
+                            ⚙️ Configuración
+                        </button>                      
                     </div>                    
                     <!-- Reset -->
                     <button class="viewer-reset-btn" onclick="resetAndScroll()" title="Resetear vista">
@@ -237,6 +241,12 @@
                             <button id="clearDistanceBtn" onclick="clearDistanceMeasurement()" class="rotation-axis-reset-btn" style="width: 100%; margin-top: 0.5rem; opacity: 0.5;" disabled>
                                 🗑️ Borrar Medición
                             </button>
+                            <div class="rotation-option" id="measurementListContainer" style="display: none; margin-top: 1rem;">
+                                <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">📋 Mediciones Activas</label>
+                                <div id="measurementList" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+                                    <!-- Measurements will be added here dynamically -->
+                                </div>
+                            </div>                            
                             <div id="distanceInfo" style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(212, 164, 53, 0.1); border-radius: 5px; font-size: 0.85rem; color: var(--color-secondary); text-align: center; display: none;">
                                 Click en el modelo para marcar puntos
                             </div>
@@ -258,6 +268,116 @@
                 </div>
             </div>
         </div>
+                <!-- EXPORT SETTINGS MODAL -->
+                <div id="exportSettingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10001; align-items: center; justify-content: center;">
+                    <div style="background: white; border-radius: 15px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 2px solid var(--color-light-gray);">
+                            <h3 style="margin: 0; color: var(--color-secondary); font-size: 1.5rem;">⚙️ Configuración de Exportación</h3>
+                            <button onclick="closeExportSettings()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #999; line-height: 1;" onmouseover="this.style.color='#E63946'" onmouseout="this.style.color='#999'">✕</button>
+                        </div>
+                        
+                        <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
+                            <!-- GIF SETTINGS -->
+                            <div class="settings-section">
+                                <h4 style="color: var(--color-secondary); margin-bottom: 1rem; font-size: 1.2rem;">🎞️ GIF</h4>
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div>
+                                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray);">FPS: <span id="gifFpsValue">10</span></label>
+                                        <input type="range" id="gifFpsSlider" min="5" max="30" value="10" oninput="updateSettingValue('gifFps', this.value)" style="width: 100%; cursor: pointer;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #999; margin-top: 0.25rem;">
+                                            <span>5 fps</span>
+                                            <span>30 fps</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray);">Duración: <span id="gifDurationValue">6</span>s</label>
+                                        <input type="range" id="gifDurationSlider" min="3" max="15" value="6" oninput="updateSettingValue('gifDuration', this.value)" style="width: 100%; cursor: pointer;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #999; margin-top: 0.25rem;">
+                                            <span>3s</span>
+                                            <span>15s</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- VIDEO SETTINGS -->
+                            <div class="settings-section">
+                                <h4 style="color: var(--color-secondary); margin-bottom: 1rem; font-size: 1.2rem;">🎥 Video</h4>
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div>
+                                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray);">Resolución</label>
+                                        <select id="videoResolution" onchange="updateSettingValue('videoResolution', this.value)" style="width: 100%; padding: 0.6rem; border: 2px solid var(--color-light-gray); border-radius: 8px; font-size: 0.9rem; cursor: pointer;">
+                                            <option value="720">720p (1280x720)</option>
+                                            <option value="1080">1080p (1920x1080)</option>
+                                            <option value="1440">1440p (2560x1440)</option>
+                                        </select>
+                                    </div>    
+                                    <div>
+                                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray);">Formato</label>
+                                        <select id="videoFormat" onchange="updateSettingValue('videoFormat', this.value)" style="width: 100%; padding: 0.6rem; border: 2px solid var(--color-light-gray); border-radius: 8px; font-size: 0.9rem; cursor: pointer;">
+                                            <option value="mp4" selected>MP4 (H.264)</option>
+                                            <option value="webm">WebM (VP9)</option>
+                                        </select>
+                                    </div>                                        
+                                    
+                                    <div>
+                                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray);">Duración: <span id="videoDurationValue">20</span>s</label>
+                                        <input type="range" id="videoDurationSlider" min="5" max="60" value="20" oninput="updateSettingValue('videoDuration', this.value)" style="width: 100%; cursor: pointer;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #999; margin-top: 0.25rem;">
+                                            <span>5s</span>
+                                            <span>60s</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray);">Bitrate: <span id="videoBitrateValue">2.5</span> Mbps</label>
+                                        <input type="range" id="videoBitrateSlider" min="1" max="10" step="0.5" value="2.5" oninput="updateSettingValue('videoBitrate', this.value)" style="width: 100%; cursor: pointer;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #999; margin-top: 0.25rem;">
+                                            <span>1 Mbps</span>
+                                            <span>10 Mbps</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- SCREENSHOT SETTINGS -->
+                            <div class="settings-section">
+                                <h4 style="color: var(--color-secondary); margin-bottom: 1rem; font-size: 1.2rem;">📸 Screenshot</h4>
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div>
+                                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray);">Formato</label>
+                                        <select id="screenshotFormat" onchange="updateSettingValue('screenshotFormat', this.value)" style="width: 100%; padding: 0.6rem; border: 2px solid var(--color-light-gray); border-radius: 8px; font-size: 0.9rem; cursor: pointer;">
+                                            <option value="png" selected>PNG (Sin pérdida)</option>
+                                            <option value="jpg">JPG (Comprimido)</option>
+                                            <option value="webp">WebP (Moderna)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray);">Tamaño</label>
+                                        <select id="screenshotScale" onchange="updateSettingValue('screenshotScale', this.value)" style="width: 100%; padding: 0.6rem; border: 2px solid var(--color-light-gray); border-radius: 8px; font-size: 0.9rem; cursor: pointer;">
+                                            <option value="1">1x (Tamaño actual)</option>
+                                            <option value="2" selected>2x (Mejor calidad)</option>
+                                            <option value="4">4x (Máxima calidad)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="closeExportSettings()" style="width: 100%; padding: 0.8rem; background: var(--gradient-primary); border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; color: var(--color-secondary); transition: all 0.3s ease;">✅ Guardar Configuración</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIDEO PROGRESS BAR -->
+                <div id="videoProgressBar" style="display: none; position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.98); padding: 1.5rem; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); z-index: 10000; min-width: 350px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <span style="font-weight: 700; color: var(--color-secondary); font-size: 1rem;">🎥 Grabando Video</span>
+                        <span id="videoTimeRemaining" style="font-weight: 700; color: #E63946; font-size: 1rem;">20s</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background: var(--color-light-gray); border-radius: 10px; overflow: hidden; margin-bottom: 1rem;">
+                        <div id="videoProgressFill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--color-primary), var(--color-accent)); transition: width 0.3s ease;"></div>
+                    </div>
+                    <button onclick="stopVideoRecording()" style="width: 100%; padding: 0.6rem; background: #E63946; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='#C1121F'" onmouseout="this.style.background='#E63946'">⏹️ Detener Grabación</button>
+                </div>        
     </section>
 
     <!-- MODEL DETAIL CONTENT -->
