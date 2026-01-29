@@ -7,7 +7,8 @@
     <meta name="description" content="Detalle del modelo 3D arqueológico">
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/model.css">
+    <link rel="stylesheet" href="css/model-base.css">
+    <link rel="stylesheet" href="css/model-viewer-simple.css">
     
     <!-- Three.js r84 + Loaders (BÁSICO) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.min.js"></script>
@@ -72,33 +73,18 @@
             <div class="viewer-hero-container">
                 <!-- Simple Floating Controls -->
                 <div class="viewer-floating-controls">
-                    <!-- Toast Notification -->
                     <div id="viewerToast" class="viewer-toast"></div>
                     
-                    <!-- Basic Controls (2x2 grid) -->
-                    <div class="control-group control-group-grid">
-                        <button class="viewer-control-btn" onclick="cycleCameraView()" title="Cambiar vista">
-                            🎥
-                        </button>
-                        <button class="viewer-control-btn" id="cameraRotateBtn" onclick="toggleCameraRotation()" title="Auto-rotación cámara">
-                            🎬
-                        </button>
-                        <button class="viewer-reset-btn" onclick="resetView()" title="Resetear vista">
-                            🔄
-                        </button>
-                        <button class="viewer-control-btn" onclick="toggleViewerFullscreen()" title="Pantalla completa">
-                            🖥️
-                        </button>
+                    <!-- LEFT: Basic Controls -->
+                    <div class="control-group control-group-horizontal">
+                        <button class="viewer-control-btn" id="toggleControlsBtn" onclick="toggleControlsVisibility()" title="Mostrar/Ocultar controles">👁️</button>
+                        <button class="viewer-reset-btn" onclick="resetView()" title="Resetear vista">🔄</button>
+                        <button class="viewer-control-btn" onclick="toggleViewerFullscreen()" title="Pantalla completa">🖥️</button>
                     </div>
                     
-                    <!-- Lab Button (destacado) -->
-                    <div class="control-group">
-                        <button class="viewer-control-btn" 
-                                onclick="openLab()" 
-                                style="background: linear-gradient(135deg, #E63946 0%, #C1121F 100%); font-weight: 700;"
-                                title="Abrir Laboratorio 3D (herramientas avanzadas)">
-                            🔬
-                        </button>
+                    <!-- RIGHT: Lab Button -->
+                    <div class="lab-button-container">
+                        <button class="lab-access-btn" onclick="openLab()" title="Abrir Laboratorio 3D">🔬</button>
                     </div>
                 </div>
                 

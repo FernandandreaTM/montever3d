@@ -1,0 +1,139 @@
+/* ===== SIMPLE VIEWER CONTROLS ===== */
+
+.viewer-floating-controls {
+    position: absolute;
+    top: 1rem;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0 1rem;
+}
+
+/* Left: Basic Controls */
+.control-group {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    pointer-events: all;
+}
+
+.control-group-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 50px);
+    gap: 0.5rem;
+}
+
+/* Right: Lab Button (Animated) */
+.lab-button-container {
+    pointer-events: all;
+}
+
+.lab-access-btn {
+    background: linear-gradient(135deg, #E63946 0%, #C1121F 100%);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    font-size: 2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(230, 57, 70, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+.lab-access-btn::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 50%;
+    border: 2px solid #E63946;
+    opacity: 0;
+    animation: pulse-ring 2s ease-in-out infinite;
+}
+
+.lab-access-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 30px rgba(230, 57, 70, 0.6);
+    animation: none;
+}
+
+.lab-access-btn:active {
+    transform: scale(1.05);
+}
+
+/* Bounce Animation */
+@keyframes bounce-gentle {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Pulse Ring Animation */
+@keyframes pulse-ring {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .viewer-floating-controls {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        top: 1rem;
+    }
+
+    .control-group {
+        flex-direction: row;
+        padding: 0.5rem;
+    }
+
+    .viewer-control-btn,
+    .viewer-reset-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .lab-access-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .lab-access-btn {
+        width: 55px;
+        height: 55px;
+        font-size: 1.5rem;
+    }
+}
