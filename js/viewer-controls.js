@@ -63,8 +63,6 @@ let rotationAxis = 'y';
 let rotationMode = 'camera';
 let isCameraRotating = true;
 let isModelRotating = false;
-let fullscreenAutoHideTimeout = null;
-let isFullscreenActive = false;
 
 function toggleCameraRotation() {
     isCameraRotating = !isCameraRotating;
@@ -180,39 +178,18 @@ document.addEventListener('fullscreenchange', () => {
     const viewerCanvas = document.getElementById('modelViewer');
     
     if (document.fullscreenElement) {
-        // Entering fullscreen
-        isFullscreenActive = true;
-        
-        const controls = document.querySelector('.viewer-floating-controls');
-        if (controls) {
-            controls.classList.add('auto-hide', 'show');
-            startAutoHideTimer();
-        }
-        
         if (renderer && camera) {
             camera.aspect = window.innerWidth / window.innerHeight;
             renderer.setSize(window.innerWidth, window.innerHeight);
             camera.updateProjectionMatrix();
         }
-        
         console.log('✅ Fullscreen activado');
     } else {
-        // Exiting fullscreen
-        isFullscreenActive = false;
-        
-        const controls = document.querySelector('.viewer-floating-controls');
-        if (controls) {
-            controls.classList.remove('auto-hide', 'show');
-        }
-        
-        clearTimeout(fullscreenAutoHideTimeout);
-        
         if (renderer && camera) {
             camera.aspect = viewerCanvas.offsetWidth / 600;
             renderer.setSize(viewerCanvas.offsetWidth, 600);
             camera.updateProjectionMatrix();
         }
-        
         console.log('✅ Fullscreen desactivado');
     }
 });
@@ -308,89 +285,29 @@ function showToast(message) {
         toast.classList.remove('show');
     }, 2000);
 }
-// ===== AUTO-HIDE CONTROLS IN FULLSCREEN =====
-function startAutoHideTimer() {
-    clearTimeout(fullscreenAutoHideTimeout);
-    
-    fullscreenAutoHideTimeout = setTimeout(() => {
-        if (isFullscreenActive) {
-            const btn = document.getElementById('toggleControlsBtn');
-            
-            // Only auto-hide if controls are visible
-            if (btn.dataset.hidden !== 'true') {
-                toggleControlsVisibility();
-                console.log('🙈 Controles ocultos (inactividad)');
-            }
-        }
-    }, 3000);
-}
-function showControlsOnMouseMove() {
-    if (!isFullscreenActive) return;
-    
-    const controls = document.querySelector('.viewer-floating-controls');
-    const container = document.querySelector('.viewer-hero-container');
-    
-    if (controls && !controls.classList.contains('show')) {
-        controls.classList.add('show');
-        console.log('👀 Controles visibles');
-    }
-    
-    if (container) {
-        container.classList.remove('hide-cursor');
-    }
-    
-    startAutoHideTimer();
-}
-// Mouse move listener for fullscreen
-document.addEventListener('mousemove', showControlsOnMouseMove);
-// Also show controls when hovering over them
-document.addEventListener('DOMContentLoaded', () => {
-    const controls = document.querySelector('.viewer-floating-controls');
-    
-    if (controls) {
-        controls.addEventListener('mouseenter', () => {
-            if (isFullscreenActive) {
-                clearTimeout(fullscreenAutoHideTimeout);
-                controls.classList.add('show');
-            }
-        });
-        
-        controls.addEventListener('mouseleave', () => {
-            if (isFullscreenActive) {
-                startAutoHideTimer();
-            }
-        });
-    }
-});
 
-// ===== TOGGLE CONTROLS VISIBILITY =====
+// ===== TOGGLE CONTROLS VISIBILITY (MANUAL ONLY) =====
 function toggleControlsVisibility() {
     const allGroups = document.querySelectorAll('.control-group:not(:has(#toggleControlsBtn))');
     const btn = document.getElementById('toggleControlsBtn');
     
     if (btn.dataset.hidden === 'true') {
-        // Show controls
         allGroups.forEach(group => {
             group.style.opacity = '1';
             group.style.pointerEvents = 'all';
         });
         btn.textContent = '👁️';
         btn.dataset.hidden = 'false';
-        
-        if (isFullscreenActive) {
-            startAutoHideTimer();
-        }
     } else {
-        // Hide controls
         allGroups.forEach(group => {
             group.style.opacity = '0';
             group.style.pointerEvents = 'none';
         });
         btn.textContent = '🙈';
         btn.dataset.hidden = 'true';
-        clearTimeout(fullscreenAutoHideTimeout);
     }
 }
+
 function toggleNotesPanel() {
     const panel = document.getElementById('notesPanel');
     if (panel) {

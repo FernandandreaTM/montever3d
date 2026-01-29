@@ -4,6 +4,7 @@ let currentSTLIndex = 0;
 let groundMesh = null;
 let gridMesh = null;
 let currentBackground = 'default';
+let animationFrameId = null;
 
 // ===== GET 3D FILE (COMPATIBLE WITH BOTH SCHEMAS + AUTO-DETECT FORMAT) =====
 function get3DFile() {
@@ -232,8 +233,13 @@ function loadSTL(index) {
         controls.minDistance = distance * 0.5;
         controls.maxDistance = distance * 2.5;
         
+        // Cancel previous animation loop if exists
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+
         function animate() {
-            requestAnimationFrame(animate);
+            animationFrameId = requestAnimationFrame(animate);
             
             if (isCameraRotating) {
                 const radius = camera.position.length();
@@ -249,9 +255,10 @@ function loadSTL(index) {
                 currentMesh.rotation[rotationAxis] += rotationSpeed;
             }
             // Update measurement tools
-            if (typeof updateMeasurementTools === 'function') {
+            if (typeof updateMeasurementTools === 'function' && 
+                (measurements.length > 0 || dimensionsVisible)) {
                 updateMeasurementTools();
-            }            
+            }         
             controls.update();
             renderer.render(scene, camera);
         }       
@@ -424,8 +431,12 @@ function loadOBJ(index) {
             controls.minDistance = distance * 0.5;
             controls.maxDistance = distance * 2.5;
             
+            // Cancel previous animation loop if exists
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
             function animate() {
-                requestAnimationFrame(animate);
+                animationFrameId = requestAnimationFrame(animate);
                 
                 if (isCameraRotating) {
                     const radius = camera.position.length();
@@ -441,9 +452,10 @@ function loadOBJ(index) {
                     currentMesh.rotation[rotationAxis] += rotationSpeed;
                 }
                 // Update measurement tools
-                if (typeof updateMeasurementTools === 'function') {
+                if (typeof updateMeasurementTools === 'function' && 
+                    (measurements.length > 0 || dimensionsVisible)) {
                     updateMeasurementTools();
-                }                
+                }               
                 controls.update();
                 renderer.render(scene, camera);
             }
