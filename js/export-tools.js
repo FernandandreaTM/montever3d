@@ -513,30 +513,6 @@ function captureScreenshotForGallery() {
     console.log(`✅ Screenshot added to gallery (${screenshotGallery.length} total)`);
 }
 
-function updateGalleryUI() {
-    const container = document.getElementById('screenshotGalleryContainer');
-    if (!container) return;
-    
-    if (screenshotGallery.length === 0) {
-        container.style.display = 'none';
-        return;
-    }
-    
-    container.style.display = 'block';
-    const list = document.getElementById('screenshotGalleryList');
-    
-    list.innerHTML = screenshotGallery.map((screenshot, index) => `
-        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.5); border-radius: 6px;">
-            <img src="${screenshot.data}" style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px; border: 2px solid var(--color-light-gray);">
-            <div style="flex: 1; font-size: 0.85rem;">
-                <div style="font-weight: 600; color: var(--color-secondary);">Screenshot ${index + 1}</div>
-                <div style="color: #666; font-size: 0.75rem;">${screenshot.timestamp}</div>
-            </div>
-            <button onclick="removeScreenshotFromGallery(${screenshot.id})" style="background: #E63946; color: white; border: none; padding: 0.4rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">🗑️</button>
-        </div>
-    `).join('');
-}
-
 function removeScreenshotFromGallery(id) {
     screenshotGallery = screenshotGallery.filter(s => s.id !== id);
     updateGalleryUI();

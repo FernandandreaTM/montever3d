@@ -372,8 +372,6 @@ function completeMeasurement(point) {
     updateMeasurementList();
     
     document.getElementById('distanceInfo').textContent = `${measurements.length} medición(es) activa(s) - Click para nueva medición`;
-    document.getElementById('clearDistanceBtn').disabled = false;
-    document.getElementById('clearDistanceBtn').style.opacity = '1';
     
     console.log(`📍 Medición ${measurements.length} completada`);
 }
@@ -430,11 +428,7 @@ function clearDistanceMeasurement() {
     }
     
     measurements = [];
-    
-    updateMeasurementList(); // ADD THIS LINE
-    
-    document.getElementById('clearDistanceBtn').disabled = true;
-    document.getElementById('clearDistanceBtn').style.opacity = '0.5';
+    updateMeasurementList();
     
     if (distanceMeasurementActive) {
         document.getElementById('distanceInfo').textContent = 'Click para marcar Punto A';

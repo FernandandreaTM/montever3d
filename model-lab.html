@@ -260,19 +260,17 @@
                             </button>
                         </div>
                         
-                        <!-- Distance Measurement Tool -->
                         <div class="rotation-option">
-                            <label style="font-weight: 600;">📐 Medir entre Puntos</label>
-                            <button id="distanceMeasureToggle" onclick="toggleDistanceMeasurement()" class="rotation-mode-btn" style="width: 100%; margin-top: 0.5rem;">
-                                📐 Activar Medición
-                            </button>
-                            <button id="clearDistanceBtn" onclick="clearDistanceMeasurement()" class="rotation-axis-reset-btn" style="width: 100%; margin-top: 0.5rem; opacity: 0.5;" disabled>
-                                🗑️ Borrar Medición
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <label style="font-weight: 600;">📏 Medir entre Puntos</label>
+                                <button onclick="clearDistanceMeasurement()" style="background: none; border: none; color: #E63946; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Limpiar</button>
+                            </div>
+                            <button id="distanceMeasureToggle" onclick="toggleDistanceMeasurement()" class="rotation-mode-btn" style="width: 100%;">
+                                📏 Activar Medición
                             </button>
                             <div class="rotation-option" id="measurementListContainer" style="display: none; margin-top: 1rem;">
                                 <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">📋 Mediciones Activas</label>
                                 <div id="measurementList" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
-                                    <!-- Measurements will be added here dynamically -->
                                 </div>
                             </div>                            
                             <div id="distanceInfo" style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(212, 164, 53, 0.1); border-radius: 5px; font-size: 0.85rem; color: var(--color-secondary); text-align: center; display: none;">
