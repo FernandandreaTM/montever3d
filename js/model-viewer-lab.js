@@ -31,6 +31,16 @@ async function loadModelData() {
         
         populateLabHeader();
         initialize3DViewer();
+
+        // Auto-fullscreen on load
+        setTimeout(() => {
+            const container = document.querySelector('.viewer-hero-container');
+            if (container && !document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {
+                    console.log('Fullscreen bloqueado por navegador, modo regular activo');
+                });
+            }
+        }, 500);
         
         console.log(`✅ Lab loaded model: ${currentModel.id}`);
         
@@ -195,5 +205,32 @@ function showLabError() {
         `;
     }
 }
+// Fullscreen Banner Controls
+function closeFullscreenBanner() {
+    const banner = document.getElementById('fullscreenBanner');
+    if (banner) {
+        banner.style.animation = 'slideDown 0.3s ease reverse';
+        setTimeout(() => banner.remove(), 300);
+    }
+}
+
+// Auto-hide banner after fullscreen activated
+document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+        closeFullscreenBanner();
+    }
+});
+
+// Make banner clickable to activate fullscreen
+window.addEventListener('load', () => {
+    const banner = document.getElementById('fullscreenBanner');
+    if (banner) {
+        banner.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') {
+                toggleViewerFullscreen();
+            }
+        });
+    }
+});
 
 console.log('✅ Model Viewer Lab loaded');
