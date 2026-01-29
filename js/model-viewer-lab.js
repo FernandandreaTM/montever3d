@@ -45,14 +45,9 @@ function populateLabHeader() {
     document.title = `${currentModel.title} - Laboratorio 3D - MonteVer3D`;
     document.getElementById('pageTitle').textContent = `${currentModel.title} - Laboratorio 3D - MonteVer3D`;
     
-    document.getElementById('modelTitle').textContent = currentModel.title;
-    document.getElementById('modelCategory').textContent = currentModel.category;
+    // Update breadcrumb
     document.getElementById('breadcrumbCategory').textContent = currentModel.category;
-    
-    const badgesContainer = document.getElementById('modelBadges');
-    if (badgesContainer) {
-        badgesContainer.innerHTML = createBadges(currentModel);
-    }
+    document.getElementById('breadcrumbTitle').textContent = currentModel.title;
 }
 
 // ===== CREATE BADGES =====

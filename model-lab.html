@@ -57,7 +57,9 @@
                 <span>›</span>
                 <span id="breadcrumbCategory">Categoría</span>
                 <span>›</span>
-                <span style="color: var(--color-accent);">🔬 Laboratorio 3D</span>
+                <span>🔬 Laboratorio 3D</span>
+                <span>›</span>
+                <span id="breadcrumbTitle">Modelo 3D</span>
             </div>
         </div>
     </section>
@@ -65,71 +67,70 @@
     <!-- 3D VIEWER HERO SECTION -->
     <section class="viewer-hero-section" id="viewerSection" style="display: none;">
         <div class="container">
-            <div class="viewer-hero-header">
-                <div>
-                    <h1 id="modelTitle">Cargando modelo...</h1>
-                    <div id="modelBadges" class="model-badges-container"></div>
-                    <p id="modelCategory" class="model-category-tag"></p>
-                </div>
-            </div>
-            
             <div class="viewer-hero-container">
                 <!-- Enhanced Floating Controls - Max 2 columns -->
                 <div class="viewer-floating-controls">
                     <!-- Toast Notification -->
                     <div id="viewerToast" class="viewer-toast"></div>
-                    <!-- Actions Group (2 columns) -->
-                    <div class="control-group control-group-horizontal">
-                        <button class="viewer-control-btn" id="toggleControlsBtn" onclick="toggleControlsVisibility()" title="Mostrar/Ocultar controles">
-                            👁️
-                        </button>
-                        <button class="viewer-reset-btn" onclick="resetAndScroll()" title="Resetear vista">
-                            🔄
-                        </button>
-                    </div>
-                    <!-- Camera & View Group (2x2 grid) -->
-                    <div class="control-group control-group-grid">
-                        <button class="viewer-control-btn" onclick="cycleCameraView()" title="Cambiar vista">
-                            🎥
-                        </button>
-                        <button class="viewer-control-btn" id="cameraRotateBtn" onclick="toggleCameraRotation()" title="Auto-rotación cámara">
-                            🎬
-                        </button>
-                        <button class="viewer-control-btn" onclick="toggleViewerFullscreen()" title="Pantalla completa">
-                            🖥️
-                        </button>
+                    <!-- LEFT CONTROLS -->
+                    <div class="controls-left">
+                        <div class="control-group control-group-horizontal">
+                            <button class="viewer-control-btn" id="toggleControlsBtn" onclick="toggleControlsVisibility()" title="Mostrar/Ocultar controles">
+                                👁️
+                            </button>
+                            <button class="viewer-reset-btn" onclick="resetAndScroll()" title="Resetear vista">
+                                🔄
+                            </button>
+                            <button class="viewer-control-btn" onclick="toggleViewerFullscreen()" title="Pantalla completa">
+                                🖥️
+                            </button>
+                        </div>
                     </div>
                     
-                    <!-- Material & Background Group (2x2 grid) -->
-                    <div class="control-group control-group-grid">
-                        <button class="viewer-control-btn" onclick="toggleMaterialMode()" title="Cambiar modo de material">
-                            🎨
-                        </button>
-                        <input type="color" id="bgColorPicker" value="#2F5233" onchange="setSceneColor(this.value)" 
-                            class="viewer-control-btn color-picker-btn" title="Color de fondo">
-                        <button class="viewer-control-btn" id="groundBtn" onclick="toggleGround()" title="Toggle Bandeja">
-                            🏞️
-                        </button>
-                        <button class="viewer-control-btn" id="gridBtn" onclick="toggleGrid()" title="Toggle Grid">
-                            📐
-                        </button>
+                    <!-- RIGHT CONTROLS -->
+                    <div class="controls-right">
+                        <!-- Camera & View Group (2x2 grid) -->
+                        <div class="control-group control-group-grid">
+                            <button class="viewer-control-btn" onclick="cycleCameraView()" title="Cambiar vista">
+                                🎥
+                            </button>
+                            <button class="viewer-control-btn" id="cameraRotateBtn" onclick="toggleCameraRotation()" title="Auto-rotación cámara">
+                                🎬
+                            </button>
+                        </div>
+                        
+                        <!-- Material & Background Group (2x2 grid) -->
+                        <div class="control-group control-group-grid">
+                            <button class="viewer-control-btn" onclick="toggleMaterialMode()" title="Cambiar modo de material">
+                                🎨
+                            </button>
+                            <input type="color" id="bgColorPicker" value="#2F5233" onchange="setSceneColor(this.value)" 
+                                class="viewer-control-btn color-picker-btn" title="Color de fondo">
+                            <button class="viewer-control-btn" id="groundBtn" onclick="toggleGround()" title="Toggle Bandeja">
+                                🏞️
+                            </button>
+                            <button class="viewer-control-btn" id="gridBtn" onclick="toggleGrid()" title="Toggle Grid">
+                                📏
+                            </button>
+                        </div>
+                        
+                        <!-- Advanced Tools (2x2 grid) -->
+                        <div class="control-group control-group-grid">
+                            <button class="viewer-control-btn" onclick="toggleRepositionPanel()" title="Rotación del Modelo">
+                                🌀
+                            </button>
+                            <button class="viewer-control-btn" onclick="toggleMeasurementPanel()" title="Herramientas de Medición">
+                                📐
+                            </button>
+                            <button class="viewer-control-btn" onclick="toggleNotesPanel()" title="Notas del Reporte">
+                                📝
+                            </button>
+                            <button class="viewer-control-btn" onclick="alert('Próximamente')" title="Próxima herramienta" style="opacity: 0.5;">
+                                ❓
+                            </button>
+                        </div>
                     </div>
                     
-                    <!-- Advanced Tools (2x2 grid) -->
-                    <div class="control-group control-group-grid">
-                        <button class="viewer-control-btn" onclick="toggleRepositionPanel()" title="Rotación del Modelo">
-                            🌀
-                        </button>
-                        <button class="viewer-control-btn" onclick="toggleMeasurementPanel()" title="Herramientas de Medición">
-                            📏
-                        </button>
-                        <button class="viewer-control-btn" onclick="toggleNotesPanel()" title="Notas del Reporte">
-                            📝
-                        </button>
-                        <button class="viewer-control-btn" onclick="alert('Próximamente')" title="Próxima herramienta" style="opacity: 0.5;">
-                            ❓
-                        </button>
-                    </div>
                     <!-- Export Menu -->
                     <div class="export-menu" id="exportMenu">
                         <div class="export-menu-header">
@@ -151,19 +152,6 @@
                             ⚙️ Configuración
                         </button>                      
                     </div> 
-                    <!-- Export Report Button (ocupa 2 columnas) -->
-                    <div class="control-group" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
-                        <button class="viewer-control-btn" 
-                                style="background: linear-gradient(135deg, #E63946 0%, #C1121F 100%)"
-                                id="exportBtn" onclick="toggleExportMenu()" title="Exportar">
-                            📷
-                        </button>
-                        <button class="viewer-control-btn" onclick="openPDFReportModal()" 
-                                style="background: linear-gradient(135deg, #E63946 0%, #C1121F 100%)"
-                                title="Generar Reporte PDF">
-                            📄 
-                        </button>
-                    </div>                             
                 </div>
                 
                 <div class="rotation-advanced-panel" id="repositionPanel">
@@ -318,6 +306,21 @@
                     </div>
                 </div>
                 
+                <!-- CONSOLE BAR -->
+                <div class="viewer-console-bar">
+                    <div class="console-info">
+                        <span id="consoleStatus">🔬 Laboratorio 3D activo</span>
+                    </div>
+                    <div class="console-actions">
+                        <button class="console-btn console-btn-export" onclick="toggleExportMenu()" title="Exportar">
+                            📷 Exportar
+                        </button>
+                        <button class="console-btn console-btn-report" onclick="openPDFReportModal()" title="Generar Reporte PDF">
+                            📄 Reporte PDF
+                        </button>
+                    </div>
+                </div>
+
                 <div class="rotation-hint active" id="rotationHint">
                     <button class="rotation-hint-close" onclick="closeRotationHint()">×</button>
                     <span class="rotation-hint-icon">🔄</span>

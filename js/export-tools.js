@@ -58,9 +58,9 @@ function toggleExportMenu() {
 // ===== CLOSE MENU (click outside) =====
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('exportMenu');
-    const btn = document.getElementById('exportBtn');
+    const consoleExportBtn = document.querySelector('.console-btn-export');
     
-    if (menu && !menu.contains(e.target) && !btn.contains(e.target)) {
+    if (menu && !menu.contains(e.target) && consoleExportBtn && !consoleExportBtn.contains(e.target)) {
         menu.classList.remove('active');
     }
 });
