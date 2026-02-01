@@ -82,10 +82,19 @@
     backdrop-filter: blur(10px);
 }
 
+/* ===== CANVAS 3D ===== */
 .model-viewer-canvas {
     width: 100%;
     height: 700px;
     position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.model-viewer-canvas canvas {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .viewer-loading {
@@ -96,6 +105,24 @@
     height: 100%;
     gap: 1rem;
     color: var(--color-white);
+}
+
+/* ===== FULLSCREEN MODE ===== */
+.viewer-hero-container:fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+}
+
+.viewer-hero-container:fullscreen .model-viewer-canvas {
+    height: 100vh !important;
+}
+
+.viewer-hero-container:fullscreen .model-viewer-canvas canvas {
+    width: 100vw !important;
+    height: 100vh !important;
 }
 
 /* ===== SHARED BUTTON STYLES ===== */
@@ -691,12 +718,6 @@
     50% { transform: rotate(90deg); }
 }
 
-@media (max-width: 768px) and (orientation: portrait) {
-    .rotation-hint.active {
-        display: block;
-    }
-}
-
 .rotation-hint-close {
     position: absolute;
     top: 0.5rem;
@@ -743,7 +764,10 @@
     color: var(--color-dark);
 }
 
-/* ===== RESPONSIVE BASE ===== */
+/* =====================================================
+    RESPONSIVE DESIGN - TABLET & MOBILE
+   ===================================================== */
+
 @media (max-width: 1024px) {
     .model-grid {
         grid-template-columns: 1fr;
@@ -816,6 +840,12 @@
     
     .admin-link {
         display: none !important;
+    }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    .rotation-hint.active {
+        display: block;
     }
 }
 

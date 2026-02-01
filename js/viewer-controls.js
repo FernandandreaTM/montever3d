@@ -176,19 +176,40 @@ function toggleViewerFullscreen() {
 
 document.addEventListener('fullscreenchange', () => {
     const viewerCanvas = document.getElementById('modelViewer');
+    const container = document.querySelector('.viewer-hero-container');
     
     if (document.fullscreenElement) {
         if (renderer && camera) {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            // Fullscreen activado
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+            
+            // Forzar canvas a ocupar todo
+            if (renderer.domElement) {
+                renderer.domElement.style.width = '100%';
+                renderer.domElement.style.height = '100%';
+            }
         }
         console.log('✅ Fullscreen activado');
     } else {
         if (renderer && camera) {
-            camera.aspect = viewerCanvas.offsetWidth / 600;
-            renderer.setSize(viewerCanvas.offsetWidth, 600);
+            // Fullscreen desactivado
+            const width = viewerCanvas.offsetWidth;
+            const height = 700;
+            
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+            
+            // Restaurar tamaño normal
+            if (renderer.domElement) {
+                renderer.domElement.style.width = '100%';
+                renderer.domElement.style.height = '100%';
+            }
         }
         console.log('✅ Fullscreen desactivado');
     }
@@ -264,6 +285,64 @@ function toggleGrid() {
     }
 }
 
+// ===== LANDSCAPES/BACKGROUNDS =====
+const landscapeColors = {
+    'desierto': 0xD2B48C,
+    'bosque': 0x2F5233,
+    'oceano': 0x4A90A4,
+    'noche': 0x1A1A2E,
+    'nieve': 0xF0F8FF
+};
+
+let currentLandscape = 'desierto';
+
+// ===== APLICAR LANDSCAPE PREDEFINIDO =====
+function applyLandscape(type) {
+    if (!scene) return;
+    
+    currentLandscape = type;
+    const color = landscapeColors[type];
+    scene.background = new THREE.Color(color);
+    
+    const landscapeLabels = {
+        'desierto': 'Desierto',
+        'bosque': 'Bosque',
+        'oceano': 'Océano',
+        'noche': 'Noche',
+        'nieve': 'Nieve'
+    };
+    
+    showToast(`Fondo: ${landscapeLabels[type]}`);
+}
+
+// ===== LANDSCAPE CON OPCIÓN CUSTOM =====
+function selectLandscape(value) {
+    if (value === 'custom') {
+        openBackgroundColorPicker();
+        return;
+    }
+    applyLandscape(value);
+}
+
+// ===== SELECTOR COLOR BACKGROUND PERSONALIZADO =====
+function openBackgroundColorPicker() {
+    const input = document.createElement('input');
+    input.type = 'color';
+    
+    // Convertir color actual a hex
+    const currentColor = scene.background;
+    const hex = '#' + currentColor.getHexString();
+    input.value = hex;
+    
+    input.addEventListener('change', (e) => {
+        setSceneColor(e.target.value);
+        currentLandscape = 'custom';
+        showToast('Fondo personalizado');
+    });
+    
+    input.click();
+}
+
 function setSceneColor(color) {
     if (!scene) return;
     scene.background = new THREE.Color(color);
@@ -312,5 +391,28 @@ function toggleNotesPanel() {
     const panel = document.getElementById('notesPanel');
     if (panel) {
         panel.classList.toggle('active');
+    }
+}
+
+function toggleOpacityPanel() {
+    const panel = document.getElementById('opacityPanel');
+    if (panel) {
+        panel.classList.toggle('active');
+    }
+}
+
+// ===== COLAPSAR GRUPOS DE CONTROLES =====
+function toggleControlGroup(groupId) {
+    const group = document.getElementById(groupId);
+    if (group) {
+        group.classList.toggle('collapsed');
+    }
+}
+
+// ===== COLAPSAR BARRA DE HERRAMIENTAS =====
+function toggleToolsBar() {
+    const toolbar = document.getElementById('toolsContainer');
+    if (toolbar) {
+        toolbar.classList.toggle('collapsed');
     }
 }

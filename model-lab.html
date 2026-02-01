@@ -107,48 +107,58 @@
                     
                     <!-- RIGHT CONTROLS -->
                     <div class="controls-right">
-                        <!-- Camera & View Group (2x2 grid) -->
-                        <div class="control-group control-group-grid">
-                            <button class="viewer-control-btn" onclick="cycleCameraView()" title="Cambiar vista">
-                                🎥
-                            </button>
-                            <button class="viewer-control-btn" id="cameraRotateBtn" onclick="toggleCameraRotation()" title="Auto-rotación cámara">
-                                🎬
-                            </button>
+                        <!-- Camera Group (colapsable) -->
+                        <div class="control-group collapsible" id="cameraGroup">
+                            <div class="control-group-label" onclick="toggleControlGroup('cameraGroup')">🎥 Cámara</div>
+                            <div class="control-group-grid">
+                                <button class="viewer-control-btn" onclick="cycleCameraView()" title="Cambiar vista">
+                                    🎥
+                                </button>
+                                <button class="viewer-control-btn" id="cameraRotateBtn" onclick="toggleCameraRotation()" title="Auto-rotación cámara">
+                                    🎬
+                                </button>
+                            </div>
                         </div>
                         
-                        <!-- Material & Background Group (2x2 grid) -->
-                        <div class="control-group control-group-grid">
-                            <button class="viewer-control-btn" onclick="toggleMaterialMode()" title="Cambiar modo de material">
-                                🎨
-                            </button>
-                            <input type="color" id="bgColorPicker" value="#2F5233" onchange="setSceneColor(this.value)" 
-                                class="viewer-control-btn color-picker-btn" title="Color de fondo">
-                            <button class="viewer-control-btn" id="groundBtn" onclick="toggleGround()" title="Toggle Bandeja">
-                                🏞️
-                            </button>
-                            <button class="viewer-control-btn" id="gridBtn" onclick="toggleGrid()" title="Toggle Grid">
-                                📐
-                            </button>
+                        <!-- Background Group (colapsable) -->
+                        <div class="control-group collapsible" id="backgroundGroup">
+                            <div class="control-group-label" onclick="toggleControlGroup('backgroundGroup')">🌄 Fondo</div>
+                            <div class="control-group-grid">
+                                <button class="viewer-control-btn" onclick="alert('Controles de iluminación próximamente')" title="Iluminación" style="opacity: 0.5;">
+                                    💡
+                                </button>
+                                <button class="viewer-control-btn" onclick="openBackgroundColorPicker()" title="Color de fondo">
+                                    🎨
+                                </button>
+                                <button class="viewer-control-btn" id="groundBtn" onclick="toggleGround()" title="Toggle Bandeja">
+                                    🏞️
+                                </button>
+                                <button class="viewer-control-btn" id="gridBtn" onclick="toggleGrid()" title="Toggle Grid">
+                                    📏
+                                </button>
+                            </div>
                         </div>
                         
-                        <!-- Advanced Tools (2x2 grid) -->
-                        <div class="control-group control-group-grid">
-                            <button class="viewer-control-btn" onclick="toggleRepositionPanel()" title="Rotación del Modelo">
-                                🌀
-                            </button>
-                            <button class="viewer-control-btn" onclick="toggleMeasurementPanel()" title="Herramientas de Medición">
-                                📏
-                            </button>
-                            <button class="viewer-control-btn" onclick="toggleNotesPanel()" title="Notas del Reporte">
-                                📝
-                            </button>
-                            <button class="viewer-control-btn" onclick="alert('Próximamente')" title="Próxima herramienta" style="opacity: 0.5;">
-                                ❓
-                            </button>
+                        <!-- Material Group (colapsable) -->
+                        <div class="control-group collapsible" id="materialGroup">
+                            <div class="control-group-label" onclick="toggleControlGroup('materialGroup')">🎨 Material</div>
+                            <div class="control-group-grid">
+                                <button class="viewer-control-btn" onclick="toggleMaterialMode()" title="Cambiar modo de material">
+                                    🎨
+                                </button>
+                                <button class="viewer-control-btn" onclick="alert('Selector de texturas próximamente')" title="Seleccionar textura">
+                                    🪨
+                                </button>
+                                <button class="viewer-control-btn" onclick="openSolidColorPicker()" title="Color modo sólido">
+                                    🎨
+                                </button>
+                                <button class="viewer-control-btn" onclick="toggleOpacityPanel()" title="Ajustar opacidad">
+                                    ✨
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    
+
                     <!-- Export Menu -->
                     <div class="export-menu" id="exportMenu">
                         <div class="export-menu-header">
@@ -236,6 +246,29 @@
                         <button onclick="resetRotationSettings()" class="rotation-reset-btn">🔄 Restaurar Todo</button>
                     </div>
                 </div> 
+                
+                <!-- OPACITY PANEL -->
+                <div class="rotation-advanced-panel" id="opacityPanel">
+                    <div class="rotation-panel-header">
+                        <span>✨ Opacidad del Modelo</span>
+                        <button onclick="toggleOpacityPanel()" class="panel-close-btn">×</button>
+                    </div>
+                    
+                    <div class="rotation-panel-content">
+                        <div class="rotation-option">
+                            <label>Opacidad: <span id="opacityValue">100%</span></label>
+                            <input type="range" id="opacitySlider" min="0.1" max="1.0" step="0.05" value="1.0" 
+                                oninput="applyOpacity(this.value)" class="rotation-slider">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #999; margin-top: 0.25rem;">
+                                <span>10% Transparente</span>
+                                <span>100% Opaco</span>
+                            </div>
+                        </div>
+                        
+                        <button onclick="resetOpacity()" class="rotation-reset-btn">🔄 Restaurar Opacidad</button>
+                    </div>
+                </div>
+
                 <!-- MEASUREMENT TOOLS PANEL -->
                 <div class="rotation-advanced-panel" id="measurementPanel">
                     <div class="rotation-panel-header">
@@ -322,6 +355,28 @@
                     </div>
                 </div>
                 
+                <!-- BARRA DE HERRAMIENTAS HORIZONTAL (ABAJO) -->
+                <div class="viewer-tools-bar">
+                    <div class="tools-container" id="toolsContainer">
+                        <div class="tools-header" onclick="toggleToolsBar()">🔧 Herramientas</div>
+                        <div class="tools-grid-horizontal">
+                            <button class="viewer-control-btn" onclick="toggleRepositionPanel()" title="Rotación del Modelo">
+                                🌀
+                            </button>
+                            <button class="viewer-control-btn" onclick="toggleMeasurementPanel()" title="Herramientas de Medición">
+                                📏
+                            </button>
+                            <button class="viewer-control-btn" onclick="toggleNotesPanel()" title="Notas del Reporte">
+                                📝
+                            </button>
+                            <button class="viewer-control-btn" onclick="alert('Próximamente')" title="Próxima herramienta" style="opacity: 0.5;">
+                                ❓
+                            </button>
+                            <!-- Aquí se agregarán más herramientas futuras -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- CONSOLE BAR -->
                 <div class="viewer-console-bar">
                     <div class="console-info">

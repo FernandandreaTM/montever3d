@@ -40,9 +40,124 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.control-group-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    padding: 0.3rem 0.5rem;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+}
+
+/* ===== GRUPOS COLAPSABLES ===== */
+.control-group.collapsible {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-group.collapsible .control-group-label {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.control-group.collapsible .control-group-grid {
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+    opacity: 1;
+}
+
+.control-group.collapsible.collapsed .control-group-grid {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    pointer-events: none;
+}
+
+/* ===== BARRA DE HERRAMIENTAS HORIZONTAL (ABAJO IZQUIERDA) ===== */
+.viewer-tools-bar {
+    position: absolute;
+    bottom: 90px;
+    left: 1rem;
+    z-index: 98;
+    pointer-events: all;
+}
+
+.tools-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.75rem 1rem;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    border-radius: 12px; 
+}
+
+.tools-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.3rem 0.75rem;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.tools-header:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.tools-grid-horizontal {
+    display: flex;
+    gap: 0.5rem;
+    transition: max-width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+    max-width: none; /* ELIMINAR límite */
+    opacity: 1;
+}
+
+.tools-container.collapsed .tools-grid-horizontal {
+    max-width: 0;
+    opacity: 0;
+    padding: 0;
+    gap: 0;
+    pointer-events: none;
+}
+
+/* ===== RESPONSIVE TOOLS BAR ===== */
+@media (max-width: 768px) {
+    .viewer-tools-bar {
+        bottom: 120px;
+        left: 0.5rem;
+    }
+    
+    .tools-grid-horizontal {
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        max-width: calc(100vw - 2rem);
+    }
+    
+    .tools-container {
+        padding: 0.5rem;
+        flex-wrap: wrap;
+    }
+}
+
 .control-group-grid {
     display: grid;
-    grid-template-columns: repeat(2, 45px);
+    grid-template-columns: repeat(2, 50px);
     gap: 0.5rem;
 }
 

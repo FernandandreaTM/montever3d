@@ -131,7 +131,7 @@ function loadSTL(index) {
     if (selector) container.appendChild(selector);
     
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x2F5233);
+    scene.background = new THREE.Color(0xD2B48C); // Desierto default
     
     camera = new THREE.PerspectiveCamera(50, container.offsetWidth / 600, 0.1, 1000);
     camera.position.set(0, 30, 80);
@@ -188,7 +188,6 @@ function loadSTL(index) {
     gridMesh.position.y = -39.9;
     scene.add(gridMesh);
     
-    document.getElementById('cameraRotateBtn').style.background = 'rgba(245, 200, 66, 0.9)';
     document.getElementById('groundBtn').style.background = 'rgba(245, 200, 66, 0.9)';
     document.getElementById('gridBtn').style.background = 'rgba(245, 200, 66, 0.9)';
 
@@ -353,7 +352,6 @@ function loadOBJ(index) {
     gridMesh.position.y = -39.9;
     scene.add(gridMesh);
 
-    document.getElementById('cameraRotateBtn').style.background = 'rgba(245, 200, 66, 0.9)';
     document.getElementById('groundBtn').style.background = 'rgba(245, 200, 66, 0.9)';
     document.getElementById('gridBtn').style.background = 'rgba(245, 200, 66, 0.9)';
     
