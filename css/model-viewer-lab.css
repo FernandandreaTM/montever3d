@@ -67,7 +67,6 @@
 
 .control-group.collapsible .control-group-grid {
     max-height: 500px;
-    overflow: hidden;
     transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
     opacity: 1;
 }
