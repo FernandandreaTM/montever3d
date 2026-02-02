@@ -370,13 +370,14 @@ function toggleMeasurementPanel() {
 }
 
 function showToast(message) {
-    const toast = document.getElementById('viewerToast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 2000);
+    const consoleLog = document.getElementById('consoleLog');
+    if (consoleLog) {
+        consoleLog.style.animation = 'none';
+        setTimeout(() => {
+            consoleLog.textContent = message;
+            consoleLog.style.animation = 'fadeIn 0.3s ease';
+        }, 10);
+    }
 }
 
 // ===== TOGGLE CONTROLS VISIBILITY (MANUAL ONLY) =====

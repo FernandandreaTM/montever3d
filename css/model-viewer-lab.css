@@ -192,6 +192,24 @@
     gap: 1rem;
 }
 
+.console-separator {
+    color: rgba(245, 200, 66, 0.4);
+    margin: 0 0.75rem;
+    font-weight: 700;
+}
+
+#consoleLog {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
 .console-info span {
     color: var(--color-primary);
     font-weight: 600;

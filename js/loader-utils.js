@@ -131,7 +131,7 @@ function loadSTL(index) {
     if (selector) container.appendChild(selector);
     
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xD2B48C); // Desierto default
+    scene.background = new THREE.Color(0xa2B18C); // Desierto default
     
     camera = new THREE.PerspectiveCamera(50, container.offsetWidth / 600, 0.1, 1000);
     camera.position.set(0, 30, 80);
