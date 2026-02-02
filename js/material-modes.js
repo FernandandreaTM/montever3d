@@ -36,8 +36,8 @@ function generateProceduralTexture(type) {
             break;
             
         case 'ceramica':
-            // Base terracota
-            ctx.fillStyle = '#D4735E';
+            // Base terracota 
+            ctx.fillStyle = '#a45a1a';
             ctx.fillRect(0, 0, 512, 512);
             // Variaciones de tono
             for (let i = 0; i < 1000; i++) {
@@ -45,7 +45,7 @@ function generateProceduralTexture(type) {
                 const y = Math.random() * 512;
                 const size = Math.random() * 5;
                 const variation = Math.floor(Math.random() * 30 - 15);
-                ctx.fillStyle = `rgb(${212+variation}, ${115+variation}, ${94+variation})`;
+                ctx.fillStyle = `rgb(${184+variation}, ${96+variation}, ${58+variation})`;
                 ctx.fillRect(x, y, size, size);
             }
             break;
@@ -54,18 +54,26 @@ function generateProceduralTexture(type) {
             // Base beige
             ctx.fillStyle = '#E8DCC4';
             ctx.fillRect(0, 0, 512, 512);
-            // Vetas oscuras
-            ctx.strokeStyle = 'rgba(200, 180, 150, 0.3)';
-            ctx.lineWidth = 2;
-            for (let i = 0; i < 30; i++) {
+            // Vetas más sutiles y orgánicas
+            ctx.strokeStyle = 'rgba(200, 180, 150, 0.15)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 20; i++) {
                 ctx.beginPath();
-                ctx.moveTo(Math.random() * 512, 0);
-                ctx.bezierCurveTo(
-                    Math.random() * 512, Math.random() * 512,
-                    Math.random() * 512, Math.random() * 512,
-                    Math.random() * 512, 512
-                );
+                const startY = Math.random() * 512;
+                ctx.moveTo(0, startY);
+                for (let x = 0; x < 512; x += 20) {
+                    const y = startY + Math.sin(x * 0.02) * 15 + (Math.random() - 0.5) * 10;
+                    ctx.lineTo(x, y);
+                }
                 ctx.stroke();
+            }
+            // Textura granular fina
+            for (let i = 0; i < 1500; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const brightness = Math.floor(Math.random() * 20 - 10);
+                ctx.fillStyle = `rgb(${232+brightness}, ${220+brightness}, ${196+brightness})`;
+                ctx.fillRect(x, y, 1, 1);
             }
             break;
             
@@ -85,21 +93,60 @@ function generateProceduralTexture(type) {
             break;
             
         case 'madera':
-            // Base café
-            ctx.fillStyle = '#8B6F47';
+            // Base café oscuro corteza
+            ctx.fillStyle = '#5C4A3A';
             ctx.fillRect(0, 0, 512, 512);
-            // Vetas de madera
-            ctx.strokeStyle = 'rgba(70, 50, 30, 0.4)';
-            ctx.lineWidth = 3;
-            for (let i = 0; i < 50; i++) {
+            
+            // Textura base rugosa
+            for (let i = 0; i < 3000; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const size = Math.random() * 2;
+                const brightness = Math.floor(Math.random() * 40 - 20);
+                ctx.fillStyle = `rgb(${92+brightness}, ${74+brightness}, ${58+brightness})`;
+                ctx.fillRect(x, y, size, size);
+            }
+            
+            // Grietas verticales irregulares
+            for (let i = 0; i < 15; i++) {
+                const startX = Math.random() * 512;
+                ctx.strokeStyle = 'rgba(40, 30, 20, 0.6)';
+                ctx.lineWidth = 2 + Math.random() * 3;
                 ctx.beginPath();
-                const y = i * 10 + Math.random() * 5;
+                ctx.moveTo(startX, 0);
+                
+                let x = startX;
+                for (let y = 0; y < 512; y += 10) {
+                    x += (Math.random() - 0.5) * 8;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+            
+            // Manchas oscuras orgánicas
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const size = 10 + Math.random() * 30;
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+                gradient.addColorStop(0, 'rgba(30, 20, 15, 0.4)');
+                gradient.addColorStop(1, 'rgba(30, 20, 15, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Líneas horizontales sutiles (fisuras)
+            for (let i = 0; i < 8; i++) {
+                const y = Math.random() * 512;
+                ctx.strokeStyle = 'rgba(30, 20, 15, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
                 ctx.moveTo(0, y);
-                ctx.bezierCurveTo(
-                    128, y + Math.random() * 10 - 5,
-                    384, y + Math.random() * 10 - 5,
-                    512, y
-                );
+                for (let x = 0; x < 512; x += 20) {
+                    ctx.lineTo(x, y + (Math.random() - 0.5) * 4);
+                }
                 ctx.stroke();
             }
             break;
@@ -198,12 +245,28 @@ function applySolidColor(color) {
 function openSolidColorPicker() {
     const input = document.createElement('input');
     input.type = 'color';
+    input.style.position = 'fixed';
+    input.style.top = '16px';
+    input.style.right = '10px';
+    input.style.opacity = '0';
+    input.style.pointerEvents = 'none';
+    
     input.value = '#' + currentSolidColor.toString(16).padStart(6, '0');
     
     input.addEventListener('change', (e) => {
         applySolidColor(e.target.value);
+        document.body.removeChild(input);
     });
     
+    input.addEventListener('blur', () => {
+        setTimeout(() => {
+            if (document.body.contains(input)) {
+                document.body.removeChild(input);
+            }
+        }, 100);
+    });
+    
+    document.body.appendChild(input);
     input.click();
 }
 

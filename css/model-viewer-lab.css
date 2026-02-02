@@ -123,7 +123,7 @@
     display: flex;
     gap: 0.5rem;
     transition: max-width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
-    max-width: none; /* ELIMINAR límite */
+    max-width: none;
     opacity: 1;
 }
 
@@ -133,25 +133,6 @@
     padding: 0;
     gap: 0;
     pointer-events: none;
-}
-
-/* ===== RESPONSIVE TOOLS BAR ===== */
-@media (max-width: 768px) {
-    .viewer-tools-bar {
-        bottom: 120px;
-        left: 0.5rem;
-    }
-    
-    .tools-grid-horizontal {
-        gap: 0.3rem;
-        flex-wrap: wrap;
-        max-width: calc(100vw - 2rem);
-    }
-    
-    .tools-container {
-        padding: 0.5rem;
-        flex-wrap: wrap;
-    }
 }
 
 .control-group-grid {
@@ -295,11 +276,9 @@
     font-size: 0.8rem;
 }
 
-/* ===== ADVANCED PANELS ===== */
+/* ===== ADVANCED PANELS - BASE STYLES ===== */
 .rotation-advanced-panel {
     position: absolute;
-    top: 20px;
-    right: 20px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
     border-radius: 15px;
@@ -307,24 +286,52 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     z-index: 100;
     min-width: 280px;
+    max-width: 320px;
     opacity: 0;
-    transform: translateX(20px);
     pointer-events: none;
     transition: all 0.3s ease;
 }
 
 .rotation-advanced-panel.active {
     opacity: 1;
-    transform: translateX(0);
     pointer-events: all;
 }
 
+/* ===== PANELES ZONA IZQUIERDA (desde herramientas) ===== */
+#repositionPanel,
+#measurementPanel,
+#notesPanel {
+    left: 15px;
+    top: 100px;
+    transform: translateX(-20px);
+}
+
+#repositionPanel.active,
+#measurementPanel.active,
+#notesPanel.active {
+    transform: translateX(0);
+}
+
+
+/* ===== PANELES ZONA DERECHA (desde botones derechos) ===== */
+#opacityPanel {
+    right: 160px;
+    top: 16px;
+    left: auto;
+    transform: translateX(20px);
+}
+
+#opacityPanel.active {
+    transform: translateX(0);
+}
+
+/* ===== PANEL COMPONENTS ===== */
 .rotation-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.8rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--color-light-gray);
     font-weight: 700;
     color: var(--color-secondary);
@@ -459,6 +466,9 @@
 }
 
 .color-picker {
+    right: 160px;
+    top: 16px;
+    left: auto;
     width: 50px;
     height: 40px;
     border: 2px solid var(--color-light-gray);
@@ -585,6 +595,9 @@
     padding: 0.5rem 0.75rem;
     border-bottom: 2px solid var(--color-light-gray);
     margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .export-menu-item {
@@ -618,6 +631,16 @@
     height: 2px;
     background: var(--color-light-gray);
     margin: 0.5rem 0;
+}
+
+/* ===== TEXTURE & LANDSCAPE MENUS POSITIONING ===== */
+#textureMenu,
+#lightingMenu,
+#landscapeMenu {
+    right: 160px;
+    top: 16px;
+    left: auto;
+    bottom: auto;
 }
 
 /* ===== FULLSCREEN AUTO-HIDE CONTROLS ===== */
@@ -677,5 +700,53 @@
         flex: 1;
         padding: 0.5rem 0.75rem;
         font-size: 0.85rem;
+    }
+    
+    /* Responsive tools bar */
+    .viewer-tools-bar {
+        bottom: 120px;
+        left: 0.5rem;
+    }
+    
+    .tools-grid-horizontal {
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        max-width: calc(100vw - 2rem);
+    }
+    
+    .tools-container {
+        padding: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    /* Responsive menus */
+    #textureMenu,
+    #landscapeMenu {
+        right: 10px;
+        left: auto;
+        min-width: 180px;
+    }
+    
+    #textureMenu {
+        top: 200px;
+    }
+    
+    #landscapeMenu {
+        top: 140px;
+    }
+    
+    /* Responsive panels */
+    #repositionPanel,
+    #measurementPanel,
+    #notesPanel {
+        left: 10px;
+        right: 10px;
+        max-width: calc(100vw - 20px);
+    }
+    
+    #opacityPanel {
+        right: 10px;
+        left: auto;
+        max-width: calc(100vw - 20px);
     }
 }

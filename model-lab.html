@@ -124,17 +124,17 @@
                         <div class="control-group collapsible" id="backgroundGroup">
                             <div class="control-group-label" onclick="toggleControlGroup('backgroundGroup')">🌄 Fondo</div>
                             <div class="control-group-grid">
-                                <button class="viewer-control-btn" onclick="alert('Controles de iluminación próximamente')" title="Iluminación" style="opacity: 0.5;">
+                                <button class="viewer-control-btn" onclick="toggleLightingMenu()" title="Iluminación">
                                     💡
                                 </button>
-                                <button class="viewer-control-btn" onclick="openBackgroundColorPicker()" title="Color de fondo">
-                                    🎨
-                                </button>
-                                <button class="viewer-control-btn" id="groundBtn" onclick="toggleGround()" title="Toggle Bandeja">
+                                <button class="viewer-control-btn" onclick="toggleLandscapeMenu()" title="Fondos predefinidos">
                                     🏞️
                                 </button>
+                                <button class="viewer-control-btn" id="groundBtn" onclick="toggleGround()" title="Toggle Bandeja">
+                                    🔲
+                                </button>
                                 <button class="viewer-control-btn" id="gridBtn" onclick="toggleGrid()" title="Toggle Grid">
-                                    📏
+                                    ▦
                                 </button>
                             </div>
                         </div>
@@ -144,10 +144,10 @@
                             <div class="control-group-label" onclick="toggleControlGroup('materialGroup')">🎨 Material</div>
                             <div class="control-group-grid">
                                 <button class="viewer-control-btn" onclick="toggleMaterialMode()" title="Cambiar modo de material">
-                                    🎨
+                                    💫
                                 </button>
-                                <button class="viewer-control-btn" onclick="alert('Selector de texturas próximamente')" title="Seleccionar textura">
-                                    🪨
+                                <button class="viewer-control-btn" onclick="toggleTextureMenu()" title="Seleccionar textura">
+                                    🖌️
                                 </button>
                                 <button class="viewer-control-btn" onclick="openSolidColorPicker()" title="Color modo sólido">
                                     🎨
@@ -180,6 +180,77 @@
                             ⚙️ Configuración
                         </button>                      
                     </div> 
+                    <!-- TEXTURE SELECTOR MENU -->
+                    <div class="export-menu" id="textureMenu">
+                        <div class="export-menu-header">
+                            🖌️ Texturas Procedurales
+                            <button onclick="toggleTextureMenu()" style="background: none; border: none; color: #999; font-size: 1.2rem; cursor: pointer; padding: 0; margin-left: auto; line-height: 1;" onmouseover="this.style.color='#E63946'" onmouseout="this.style.color='#999'">✕</button>
+                        </div>
+                        <button class="export-menu-item" onclick="selectTexture('piedra')">
+                            🪨 Piedra
+                        </button>
+                        <button class="export-menu-item" onclick="selectTexture('ceramica')">
+                            🏺 Cerámica
+                        </button>
+                        <button class="export-menu-item" onclick="selectTexture('hueso')">
+                            🦴 Hueso
+                        </button>
+                        <button class="export-menu-item" onclick="selectTexture('tierra')">
+                            🌱 Tierra
+                        </button>
+                        <button class="export-menu-item" onclick="selectTexture('madera')">
+                            🪵 Madera
+                        </button>
+                        <button class="export-menu-item" onclick="selectTexture('metal')">
+                            ⚒️ Metal Oxidado
+                        </button>
+                    </div>
+
+                    <!-- LANDSCAPE SELECTOR MENU -->
+                    <div class="export-menu" id="landscapeMenu">
+                        <div class="export-menu-header">
+                            🌄 Fondos
+                            <button onclick="toggleLandscapeMenu()" style="background: none; border: none; color: #999; font-size: 1.2rem; cursor: pointer; padding: 0; margin-left: auto; line-height: 1;" onmouseover="this.style.color='#E63946'" onmouseout="this.style.color='#999'">✕</button>
+                        </div>
+                        <button class="export-menu-item" onclick="selectLandscapeFromMenu('desierto')">
+                            🏜️ Desierto
+                        </button>
+                        <button class="export-menu-item" onclick="selectLandscapeFromMenu('bosque')">
+                            🌲 Bosque
+                        </button>
+                        <button class="export-menu-item" onclick="selectLandscapeFromMenu('oceano')">
+                            🌊 Océano
+                        </button>
+                        <button class="export-menu-item" onclick="selectLandscapeFromMenu('noche')">
+                            🌙 Noche
+                        </button>
+                        <button class="export-menu-item" onclick="selectLandscapeFromMenu('nieve')">
+                            ❄️ Nieve
+                        </button>
+                        <div class="export-menu-divider"></div>
+                        <button class="export-menu-item" onclick="selectLandscapeFromMenu('custom')">
+                            🎨 Personalizar...
+                        </button>
+                    </div>  
+                    <!-- LIGHTING PRESETS MENU -->
+                    <div class="export-menu" id="lightingMenu">
+                        <div class="export-menu-header">
+                            💡 Iluminación
+                            <button onclick="toggleLightingMenu()" style="background: none; border: none; color: #999; font-size: 1.2rem; cursor: pointer; padding: 0; margin-left: auto; line-height: 1;" onmouseover="this.style.color='#E63946'" onmouseout="this.style.color='#999'">✕</button>
+                        </div>
+                        <button class="export-menu-item" onclick="applyLightingPreset('studio')">
+                            ☀️ Studio
+                        </button>
+                        <button class="export-menu-item" onclick="applyLightingPreset('exterior')">
+                            🌅 Exterior
+                        </button>
+                        <button class="export-menu-item" onclick="applyLightingPreset('dramatico')">
+                            🎭 Dramático
+                        </button>
+                        <button class="export-menu-item" onclick="applyLightingPreset('nocturno')">
+                            🌙 Nocturno
+                        </button>
+                    </div>                                   
                 </div>
                 
                 <div class="rotation-advanced-panel" id="repositionPanel">
@@ -190,7 +261,6 @@
                     
                     <div class="rotation-panel-content">
                         <div class="rotation-option">
-                            <label>Girar Modelo:</label>
                             <button id="modelRotateToggle" class="rotation-mode-btn" onclick="toggleModelRotation()"
                                     style="width: 100%;">
                                 🌀 Activar Rotación
@@ -239,7 +309,7 @@
                                         oninput="setManualRotation('z', this.value); document.getElementById('rotation-z-slider').value = this.value"
                                         class="rotation-number-input">
                                 </div>
-                                <button onclick="resetManualRotation()" class="rotation-axis-reset-btn">↺ Reset Rotación</button>
+
                             </div>
                         </div>
                         

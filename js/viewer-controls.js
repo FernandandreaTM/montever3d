@@ -287,11 +287,11 @@ function toggleGrid() {
 
 // ===== LANDSCAPES/BACKGROUNDS =====
 const landscapeColors = {
-    'desierto': 0xD2B48C,
+    'desierto': 0xae8656,
     'bosque': 0x2F5233,
     'oceano': 0x4A90A4,
     'noche': 0x1A1A2E,
-    'nieve': 0xF0F8FF
+    'nieve': 0xe8e8d4
 };
 
 let currentLandscape = 'desierto';
@@ -328,8 +328,12 @@ function selectLandscape(value) {
 function openBackgroundColorPicker() {
     const input = document.createElement('input');
     input.type = 'color';
+    input.style.position = 'fixed';
+    input.style.top = '16px';
+    input.style.right = '160px';
+    input.style.opacity = '0';
+    input.style.pointerEvents = 'none';
     
-    // Convertir color actual a hex
     const currentColor = scene.background;
     const hex = '#' + currentColor.getHexString();
     input.value = hex;
@@ -338,8 +342,18 @@ function openBackgroundColorPicker() {
         setSceneColor(e.target.value);
         currentLandscape = 'custom';
         showToast('Fondo personalizado');
+        document.body.removeChild(input);
     });
     
+    input.addEventListener('blur', () => {
+        setTimeout(() => {
+            if (document.body.contains(input)) {
+                document.body.removeChild(input);
+            }
+        }, 100);
+    });
+    
+    document.body.appendChild(input);
     input.click();
 }
 
@@ -416,3 +430,155 @@ function toggleToolsBar() {
         toolbar.classList.toggle('collapsed');
     }
 }
+
+// ===== TEXTURE SELECTOR MENU =====
+function toggleTextureMenu() {
+    const menu = document.getElementById('textureMenu');
+    const landscapeMenu = document.getElementById('landscapeMenu');
+    const exportMenu = document.getElementById('exportMenu');
+    
+    // Cerrar otros menús
+    if (landscapeMenu) landscapeMenu.classList.remove('active');
+    if (exportMenu) exportMenu.classList.remove('active');
+    
+    menu.classList.toggle('active');
+}
+
+function selectTexture(type) {
+    applyProceduralTexture(type);
+    toggleTextureMenu();
+}
+
+// ===== LANDSCAPE SELECTOR MENU =====
+function toggleLandscapeMenu() {
+    const menu = document.getElementById('landscapeMenu');
+    const textureMenu = document.getElementById('textureMenu');
+    const exportMenu = document.getElementById('exportMenu');
+    
+    // Cerrar otros menús
+    if (textureMenu) textureMenu.classList.remove('active');
+    if (exportMenu) exportMenu.classList.remove('active');
+    
+    menu.classList.toggle('active');
+}
+
+function selectLandscapeFromMenu(type) {
+    if (type === 'custom') {
+        toggleLandscapeMenu();
+        openBackgroundColorPicker();
+    } else {
+        applyLandscape(type);
+        toggleLandscapeMenu();
+    }
+}
+
+// ===== LIGHTING PRESETS =====
+function toggleLightingMenu() {
+    const menu = document.getElementById('lightingMenu');
+    const textureMenu = document.getElementById('textureMenu');
+    const landscapeMenu = document.getElementById('landscapeMenu');
+    const exportMenu = document.getElementById('exportMenu');
+    
+    // Cerrar otros menús
+    if (textureMenu) textureMenu.classList.remove('active');
+    if (landscapeMenu) landscapeMenu.classList.remove('active');
+    if (exportMenu) exportMenu.classList.remove('active');
+    
+    menu.classList.toggle('active');
+}
+
+function applyLightingPreset(preset) {
+    if (!scene) return;
+    
+    // Limpiar luces existentes (excepto ambient)
+    const lightsToRemove = [];
+    scene.children.forEach(child => {
+        if (child instanceof THREE.DirectionalLight || child instanceof THREE.HemisphereLight) {
+            lightsToRemove.push(child);
+        }
+    });
+    lightsToRemove.forEach(light => scene.remove(light));
+    
+    switch(preset) {
+        case 'studio':
+            // 3 luces balanceadas (key, fill, rim)
+            const keyLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            keyLight.position.set(100, 100, 100);
+            keyLight.castShadow = true;
+            scene.add(keyLight);
+            
+            const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+            fillLight.position.set(-50, 50, -50);
+            scene.add(fillLight);
+            
+            const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
+            rimLight.position.set(0, 50, -100);
+            scene.add(rimLight);
+            
+            const hemiStudio = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+            scene.add(hemiStudio);
+            
+            showToast('Iluminación: Studio');
+            break;
+            
+        case 'exterior':
+            // Luz natural tipo sol
+            const sunLight = new THREE.DirectionalLight(0xffffcc, 1.0);
+            sunLight.position.set(150, 200, 100);
+            sunLight.castShadow = true;
+            scene.add(sunLight);
+            
+            const skyLight = new THREE.HemisphereLight(0x87CEEB, 0x8B7355, 0.8);
+            scene.add(skyLight);
+            
+            showToast('Iluminación: Exterior');
+            break;
+            
+        case 'dramatico':
+            // Luz fuerte desde un lado con sombras marcadas
+            const dramaticLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            dramaticLight.position.set(150, 100, 50);
+            dramaticLight.castShadow = true;
+            scene.add(dramaticLight);
+            
+            const hemiDark = new THREE.HemisphereLight(0x444444, 0x222222, 0.3);
+            scene.add(hemiDark);
+            
+            showToast('Iluminación: Dramático');
+            break;
+            
+        case 'nocturno':
+            // Luz suave y tenue
+            const moonLight = new THREE.DirectionalLight(0xaaccff, 0.5);
+            moonLight.position.set(50, 100, 80);
+            moonLight.castShadow = true;
+            scene.add(moonLight);
+            
+            const hemiNight = new THREE.HemisphereLight(0x334466, 0x111122, 0.4);
+            scene.add(hemiNight);
+            
+            showToast('Iluminación: Nocturno');
+            break;
+    }
+    
+    toggleLightingMenu();
+}
+
+// ===== CLOSE TEXTURE/LANDSCAPE MENUS (click outside) =====
+document.addEventListener('click', (e) => {
+    const textureMenu = document.getElementById('textureMenu');
+    const landscapeMenu = document.getElementById('landscapeMenu');
+    
+    // Texture menu
+    if (textureMenu && !textureMenu.contains(e.target) && 
+        !e.target.closest('[onclick*="toggleTextureMenu"]')) {
+        textureMenu.classList.remove('active');
+    }
+    
+    // Landscape menu
+    if (landscapeMenu && !landscapeMenu.contains(e.target) && 
+        !e.target.closest('[onclick*="toggleLandscapeMenu"]')) {
+        landscapeMenu.classList.remove('active');
+    }
+});
+
